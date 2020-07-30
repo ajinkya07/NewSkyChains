@@ -117,3 +117,10 @@ export const ORDER_HISTORY_DATA = "orderHistoryData";
 export const ORDER_HISTORY_DATA_SUCCESS = "orderHistoryDataSuccess";
 export const ORDER_HISTORY_DATA_ERROR = "orderHistoryDataError";
 export const ORDER_HISTORY_DATA_RESET_REDUCER = "orderHistoryDataResetReducer";
+
+
+export const ORDER_HISTORY_DETAILS_DATA = "orderHistoryDetailsData";
+export const ORDER_HISTORY_DETAILS_DATA_SUCCESS = "orderHistoryDetailsDataSuccess";
+export const ORDER_HISTORY_DETAILS_DATA_ERROR = "orderHistoryDetailsDataError";
+export const ORDER_HISTORY_DETAILS_DATA_RESET_REDUCER = "orderHistoryDetailsDataResetReducer";
+

@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import {
   View, Text, TouchableOpacity, StyleSheet,
-  SafeAreaView, Image,
-  Platform
+  SafeAreaView, Image,FlatList,
+  Platform,ActivityIndicator
 } from 'react-native';
 import _CustomHeader from '@customHeader/_CustomHeader'
 import { heightPercentageToDP } from 'react-native-responsive-screen';
@@ -14,6 +14,8 @@ import { connect } from 'react-redux';
 import { urls } from '@api/urls'
 import { getOrderHistoryList } from '@orderHistory/OrderHistoryAction'
 import { Toast } from 'native-base';
+import _Text from '@text/_Text'
+import { color } from '@values/colors';
 
 
 var userId = ''
@@ -35,7 +37,7 @@ class OrderHistory extends Component {
   componentDidMount = async () => {
 
     const data = new FormData();
-    data.append('user_id', 94);
+    data.append('user_id', userId);
 
     await this.props.getOrderHistoryList(data)
 
@@ -92,26 +94,27 @@ class OrderHistory extends Component {
   }
 
   orderHistoryView = (item) => {
+
     return (
       <TouchableOpacity
-        onPress={() => this.props.navigation.navigate('OrderHistoryDetail')}>
+        onPress={() => this.props.navigation.navigate('OrderHistoryDetail',{data:item})}>
         <View>
-          <Text>Order Number:75</Text>
+          <Text>Order Number:{item.order_id}</Text>
           <View style={styles.rowTextStyle}>
             <Text>Order Date</Text>
-            <Text>2020-07-04</Text>
+            <Text>{item.order_date}</Text>
           </View>
           <View style={styles.rowTextStyle}>
             <Text>Delivery Date</Text>
-            <Text>2020-07-30</Text>
+            <Text>{item.delivery_date}</Text>
           </View>
           <View style={styles.rowTextStyle}>
             <Text>Total Weight</Text>
-            <Text>167.000</Text>
+    <Text>{item.total_weight}</Text>
           </View>
           <View style={styles.rowTextStyle}>
             <Text>Remarks</Text>
-            <Text>Test</Text>
+    <Text>{item.remarks}</Text>
           </View>
           <View style={styles.bottomLine}></View>
         </View>
@@ -120,8 +123,24 @@ class OrderHistory extends Component {
     )
   }
 
+
+  renderLoader = () => {
+    return (
+      <View style={{
+        position: 'absolute', height: hp(90), width: wp(100),
+        alignItems: 'center', justifyContent: 'center',
+      }}>
+        <ActivityIndicator size="large" color={color.brandColor} />
+      </View>
+    );
+  };
+
+
+
   render() {
     const { orderHistoryData } = this.props
+
+   console.warn("orderHistoryData",orderHistoryData);
 
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
@@ -143,18 +162,19 @@ class OrderHistory extends Component {
               // onRefresh={() => this.scrollDownToRefreshWishList()}
               showsVerticalScrollIndicator={false}
               renderItem={({ item }) => (
-                <View style={{ marginBottom: hp(1), marginTop: hp(1), }}>
+                <View style={{  }}>
                   {this.orderHistoryView(item)}
                 </View>
               )}
               keyExtractor={(item, index) => index.toString()}
-              style={{ marginTop: hp(1), }}
             />
 
           </View>
         }
         {!this.props.isFetching && this.props.orderHistoryData.length === 0 ?
           this.noDataFound(this.props.errorMsg) : null}
+
+      {this.props.isFetching ? this.renderLoader() : null}
 
       </SafeAreaView>
     );

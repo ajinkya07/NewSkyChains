@@ -22,8 +22,11 @@ import Modal from 'react-native-modal';
 import { color } from '@values/colors';
 
 import { version } from "../../../../package.json"
+import { parse } from '@babel/core';
 const { width } = Dimensions.get('window');
 
+
+var fullName = ''
 
 
 const AccountRow = ({ icon, title, onPress }) => {
@@ -50,9 +53,31 @@ export default class AccountContainer extends Component {
     super(props);
     this.state = {
       accountEmailModal: false,
-      isCallModalVisible: false
+      isCallModalVisible: false,
+
     };
   }
+
+  componentDidMount() {
+  fullName =   this.getItem();
+  }
+
+
+  async getItem() {
+    let value = await AsyncStorage.getItem('fullName');
+    console.warn(value,'00000');
+
+    if (value) {
+      let parsed = JSON.parse(value);
+      console.warn("parsed",parsed);
+      if (parsed) {
+        return parsed
+      }
+
+  }}
+
+
+
 
   setLogout = () => {
     Alert.alert(
@@ -131,7 +156,7 @@ export default class AccountContainer extends Component {
                 style={styles.profileImageStyle}
                 source={IconPack.PROFILE}
               />
-              <Text style={styles.profileName}>Aziz Khan</Text>
+              <Text style={styles.profileName}>Aziz</Text>
               <TouchableOpacity onPress={() => null}>
                 <Text style={styles.editProfileText}>EDIT PROFILE</Text>
               </TouchableOpacity>

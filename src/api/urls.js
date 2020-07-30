@@ -48,6 +48,9 @@ export const urls = {
     },
     OrderHistory:{
         url : url + 'Order_history'
+    },
+    OrderHistoryDetail:{
+        url: url + "Order_history/order_details"
     }
 
 

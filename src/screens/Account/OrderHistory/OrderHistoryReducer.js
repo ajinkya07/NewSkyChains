@@ -4,6 +4,11 @@ import {
     ORDER_HISTORY_DATA_ERROR,
     ORDER_HISTORY_DATA_RESET_REDUCER,
 
+    ORDER_HISTORY_DETAILS_DATA,
+    ORDER_HISTORY_DETAILS_DATA_SUCCESS,
+    ORDER_HISTORY_DETAILS_DATA_ERROR,
+    ORDER_HISTORY_DETAILS_DATA_RESET_REDUCER,
+
 } from "@redux/types";
 
 
@@ -14,6 +19,11 @@ const initialState = {
     successOrderHistoryVersion: 0,
     errorOrderHistoryVersion: 0,
     orderHistoryData: [],
+
+    successOrderHistoryDetailsVersion: 0,
+    errorOrderHistoryDetailsVersion: 0,
+    orderHistoryDetailsData:[]
+
 };
 
 export default function dataReducer(state = initialState, action) {
@@ -48,7 +58,35 @@ export default function dataReducer(state = initialState, action) {
         case ORDER_HISTORY_DATA_RESET_REDUCER:
             return initialState;
 
-
+            case ORDER_HISTORY_DETAILS_DATA:
+                return {
+                    ...state,
+                    isFetching: true
+                };
+    
+            case ORDER_HISTORY_DETAILS_DATA_SUCCESS:
+                return {
+                    ...state,
+                    errorMsg: "",
+                    isFetching: false,
+                    orderHistoryDetailsData: action.data.data,
+                    successOrderHistoryDetailsVersion: ++state.successOrderHistoryDetailsVersion,
+                    error: false
+                };
+    
+            case ORDER_HISTORY_DETAILS_DATA_ERROR:
+                return {
+                    ...state,
+                    isFetching: false,
+                    error: true,
+                    errorMsg: action.error,
+                    orderHistoryDetailsData:[],
+                    errorOrderHistoryDetailsVersion: ++state.errorOrderHistoryDetailsVersion
+                };
+    
+            case ORDER_HISTORY_DETAILS_DATA_RESET_REDUCER:
+                return initialState;
+    
 
         default:
             return state;

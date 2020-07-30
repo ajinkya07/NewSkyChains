@@ -4,6 +4,11 @@ import {
     ORDER_HISTORY_DATA_ERROR,
     ORDER_HISTORY_DATA_RESET_REDUCER,
 
+    ORDER_HISTORY_DETAILS_DATA,
+    ORDER_HISTORY_DETAILS_DATA_SUCCESS,
+    ORDER_HISTORY_DETAILS_DATA_ERROR,
+    ORDER_HISTORY_DETAILS_DATA_RESET_REDUCER,
+
   } from "@redux/types";
   
   import { strings } from '@values/strings'
@@ -67,3 +72,33 @@ import {
     }
   }
   
+
+  
+  export function getOrderHistoryDetails(data) {
+    console.warn("getOrderHistoryDetails",data);
+    
+      return dispatch => {
+        dispatch(showLoadingIndicator(ORDER_HISTORY_DETAILS_DATA));
+    
+        axios.post(urls.OrderHistoryDetail.url, data, header).then(response => {
+            console.warn("getOrderHistoryDetails", response.data);
+            if (response.data.ack ==='1') {
+              dispatch(
+                onSuccess(response.data, ORDER_HISTORY_DETAILS_DATA_SUCCESS)
+              )
+            }
+            else {
+              dispatch(
+                onFailure(response.data.msg, ORDER_HISTORY_DETAILS_DATA_ERROR)
+              )
+            }
+          })
+          .catch(function (error) {
+            console.log("getHomePageData ERROR", error);
+    
+            dispatch(
+              onFailure(strings.serverFailedMsg, ORDER_HISTORY_DETAILS_DATA_ERROR)
+            );
+          });
+      }
+    }

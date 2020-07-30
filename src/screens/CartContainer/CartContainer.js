@@ -493,7 +493,6 @@ class CartContainer extends Component {
 
     let url = 'http://jewel.jewelmarts.in/public/backend/product_images/zoom_image/'
 
-    console.log("cartData",cartData);
     
     return (
       <Container style={{ flex: 1 }}>
