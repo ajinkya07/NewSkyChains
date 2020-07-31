@@ -9,6 +9,11 @@ import {
     ORDER_HISTORY_DETAILS_DATA_ERROR,
     ORDER_HISTORY_DETAILS_DATA_RESET_REDUCER,
 
+    
+    REORDER_DATA,
+    REORDER_DATA_SUCCESS,
+    REORDER_DATA_ERROR,
+    REORDER_DATA_RESET_REDUCER,
   } from "@redux/types";
   
   import { strings } from '@values/strings'
@@ -98,6 +103,37 @@ import {
     
             dispatch(
               onFailure(strings.serverFailedMsg, ORDER_HISTORY_DETAILS_DATA_ERROR)
+            );
+          });
+      }
+    }
+
+    
+    
+  export function reOrderProduct(data) {
+    console.warn("reOrderProduct",data);
+    
+      return dispatch => {
+        dispatch(showLoadingIndicator(REORDER_DATA));
+    
+        axios.post(urls.ReOrder.url, data, header).then(response => {
+            console.warn("reOrderProduct", response.data);
+            if (response.data.ack ==='1') {
+              dispatch(
+                onSuccess(response.data, REORDER_DATA_SUCCESS)
+              )
+            }
+            else {
+              dispatch(
+                onFailure(response.data.msg, REORDER_DATA_ERROR)
+              )
+            }
+          })
+          .catch(function (error) {
+            console.log("getHomePageData ERROR", error);
+    
+            dispatch(
+              onFailure(strings.serverFailedMsg, REORDER_DATA_ERROR)
             );
           });
       }

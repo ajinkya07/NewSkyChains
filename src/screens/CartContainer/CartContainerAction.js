@@ -9,6 +9,16 @@ import {
     WISHLIST_DATA_ERROR,
     WISHLIST_DATA_RESET_REDUCER,
    
+    DELETE_FROM_CART_WISHLIST_DATA,
+    DELETE_FROM_CART_WISHLIST_DATA_SUCCESS,
+    DELETE_FROM_CART_WISHLIST_DATA_ERROR,
+    DELETE_FROM_CART_WISHLIST_DATA_RESET_REDUCER,
+   
+    TOTAL_CART_COUNT_DATA,
+    TOTAL_CART_COUNT_DATA_SUCCESS,
+    TOTAL_CART_COUNT_DATA_ERROR,
+    TOTAL_CART_COUNT_DATA_RESET_REDUCER,
+  
   } from "@redux/types";
   
   import { strings } from '@values/strings'
@@ -43,14 +53,11 @@ import {
     };
   }
   
-  export function getCartData(data) {
-  console.log("getCartData",data);
-  
+  export function getCartData(data) {  
     return dispatch => {
       dispatch(showLoadingIndicator(CART_DATA));
   
       axios.post(urls.CartData.url, data, header).then(response => {
-          console.log("getCartData", response.data);
           if (response.data.ack ==='1') {
             dispatch(
               onSuccess(response.data, CART_DATA_SUCCESS)
@@ -62,9 +69,7 @@ import {
             )
           }
         })
-        .catch(function (error) {
-          console.log("getHomePageData ERROR", error);
-  
+        .catch(function (error) {  
           dispatch(
             onFailure(strings.serverFailedMsg, CART_DATA_ERROR)
           );
@@ -73,13 +78,11 @@ import {
   }
   
   export function getWishlistData(data) {
-    console.log("getWishlistData",data);
-    
+    console.warn("getWishlistData here");
       return dispatch => {
         dispatch(showLoadingIndicator(WISHLIST_DATA));
     
         axios.post(urls.CartData.url, data, header).then(response => {
-            console.log("getWishlistData", response.data);
             if (response.data.ack ==='1') {
               dispatch(
                 onSuccess(response.data, WISHLIST_DATA_SUCCESS)
@@ -91,9 +94,7 @@ import {
               )
             }
           })
-          .catch(function (error) {
-            console.log("getHomePageData ERROR", error);
-    
+          .catch(function (error) {    
             dispatch(
               onFailure(strings.serverFailedMsg, WISHLIST_DATA_ERROR)
             );
@@ -102,3 +103,55 @@ import {
     }
       
   
+    export function deleteCartWishListProduct(data) {
+    
+      return dispatch => {
+        dispatch(showLoadingIndicator(DELETE_FROM_CART_WISHLIST_DATA));
+    
+        axios.post(urls.DeleteFromCartWishList.url, data, header).then(response => {
+          console.warn("response",response.data);
+            if (response.data.ack ==='1') {
+              dispatch(
+                onSuccess(response.data, DELETE_FROM_CART_WISHLIST_DATA_SUCCESS)
+              )
+            }
+            else {
+              dispatch(
+                onFailure(response.data.msg, DELETE_FROM_CART_WISHLIST_DATA_ERROR)
+              )
+            }
+          })
+          .catch(function (error) {    
+            dispatch(
+              onFailure(strings.serverFailedMsg, DELETE_FROM_CART_WISHLIST_DATA_ERROR)
+            );
+          });
+      }
+    }
+    
+    
+export function getTotalCartCount(data) {
+
+  return dispatch => {
+    dispatch(showLoadingIndicator(TOTAL_CART_COUNT_DATA));
+
+    axios.post(urls.TotalCartCount.url, data, header).then(response => {
+      console.log("getTotalCartCount", response.data);
+      if (response.data.ack === '1') {
+        dispatch(
+          onSuccess(response.data, TOTAL_CART_COUNT_DATA_SUCCESS)
+        )
+      }
+      else {
+        dispatch(
+          onFailure(response.data.msg, TOTAL_CART_COUNT_DATA_ERROR)
+        )
+      }
+    })
+      .catch(function (error) {
+        dispatch(
+          onFailure(strings.serverFailedMsg, TOTAL_CART_COUNT_DATA_ERROR)
+        );
+      });
+  }
+}

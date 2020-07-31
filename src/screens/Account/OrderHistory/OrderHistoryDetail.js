@@ -17,60 +17,17 @@ import {
 } from 'react-native-responsive-screen';
 import { connect } from 'react-redux';
 import { urls } from '@api/urls'
-import { getOrderHistoryDetails } from '@orderHistory/OrderHistoryAction'
+import { getOrderHistoryDetails, reOrderProduct } from '@orderHistory/OrderHistoryAction'
 import { Toast } from 'native-base';
 import Modal from 'react-native-modal';
 import _Text from '@text/_Text'
 import { color } from '@values/colors';
+import CartContainer from '@cartContainer/CartContainer'
 
 
 
 var userId = ''
 
-
-const OrderDetailBottomTab = () => {
-  return (
-    <View style={BottomTabstyles.cardContainer}>
-      <View
-        style={{
-          flex: 1.8,
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}>
-        <TouchableOpacity onPress={() => alert('Detail')}>
-          <Text style={BottomTabstyles.detailText}>DETAIL</Text>
-        </TouchableOpacity>
-      </View>
-      <View
-        style={{
-          borderLeftWidth: 1,
-          borderLeftColor: '#fbcb84',
-          marginVertical: 5,
-        }}
-      />
-      <View style={{ flex: 2, alignItems: 'center', justifyContent: 'center' }}>
-        <TouchableOpacity onPress={() => alert('Reorder')}>
-          <Text style={BottomTabstyles.detailText}>RE-ORDER</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-  );
-};
-
-const BottomTabstyles = StyleSheet.create({
-  cardContainer: {
-    width: '100%',
-    borderTopLeftRadius: 18,
-    borderTopRightRadius: 18,
-    justifyContent: 'space-between',
-    backgroundColor: '#11255a',
-    height: 48,
-    flexDirection: 'row',
-  },
-  detailText: {
-    color: '#fbcb84',
-  },
-});
 
 class OrderHistoryDetail extends Component {
 
@@ -83,9 +40,15 @@ class OrderHistoryDetail extends Component {
       orderItemdata: data,
       successOrderHistoryDetailsVersion: 0,
       errorOrderHistoryDetailsVersion: 0,
+      orderHistoryDetailsState: [],
 
       isImageModalVisibel: false,
-      imageToBeDisplayed: ''
+      imageToBeDisplayed: '',
+
+
+      successReOrderVersion: 0,
+      errorReOrderVersion: 0,
+      reOrderDataState: []
     };
     userId = global.userId
   }
@@ -97,13 +60,14 @@ class OrderHistoryDetail extends Component {
 
     const data = new FormData();
     data.append('order_id', orderItemdata.order_id);
-
     await this.props.getOrderHistoryDetails(data)
 
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    const { successOrderHistoryDetailsVersion, errorOrderHistoryDetailsVersion } = nextProps;
+    const { successOrderHistoryDetailsVersion, errorOrderHistoryDetailsVersion,
+      successReOrderVersion, errorReOrderVersion
+    } = nextProps;
 
     let newState = null;
 
@@ -120,18 +84,56 @@ class OrderHistoryDetail extends Component {
       };
     }
 
+
+    if (successReOrderVersion > prevState.successReOrderVersion) {
+      newState = {
+        ...newState,
+        successReOrderVersion: nextProps.successReOrderVersion,
+      };
+    }
+    if (errorReOrderVersion > prevState.errorReOrderVersion) {
+      newState = {
+        ...newState,
+        errorReOrderVersion: nextProps.errorReOrderVersion,
+      };
+    }
+
     return newState;
   }
 
   async componentDidUpdate(prevProps, prevState) {
-    const { orderHistoryDetailsData } = this.props;
+    const { orderHistoryDetailsData, reOrderData } = this.props;
 
     if (this.state.successOrderHistoryDetailsVersion > prevState.successOrderHistoryDetailsVersion) {
       this.setState({
-        cartStateData: orderHistoryDetailsData
+        orderHistoryDetailsState: orderHistoryDetailsData
       })
     }
     if (this.state.errorOrderHistoryDetailsVersion > prevState.errorOrderHistoryDetailsVersion) {
+      Toast.show({
+        text: this.props.errorMsg,
+        duration: 2500
+      })
+    }
+
+
+    if (this.state.successReOrderVersion > prevState.successReOrderVersion) {
+      this.setState({
+        reOrderDataState: reOrderData
+      })
+
+      Toast.show({
+        text: this.props.errorMsg,
+        duration: 2500
+      })
+      // this.props.navigation.navigate('CartContainer',{navigation:this.props.navigation})
+      
+      // return (
+      //     <CartContainer navigation={this.props.navigation} />
+      // )
+    }
+
+    if (this.state.errorReOrderVersion > prevState.errorReOrderVersion) {
       Toast.show({
         text: this.props.errorMsg,
         duration: 2500
@@ -155,7 +157,7 @@ class OrderHistoryDetail extends Component {
   renderLoader = () => {
     return (
       <View style={{
-        position: 'absolute', height: hp(90), width: wp(100),
+        position: 'absolute', height: hp(100), width: wp(100),
         alignItems: 'center', justifyContent: 'center',
       }}>
         <ActivityIndicator size="large" color={color.brandColor} />
@@ -166,7 +168,6 @@ class OrderHistoryDetail extends Component {
 
 
   showImageModal = (item) => {
-    console.log("data for image--", item);
     this.setState({
       imageToBeDisplayed: item,
       isImageModalVisibel: true
@@ -175,8 +176,6 @@ class OrderHistoryDetail extends Component {
 
 
   OrderHistoryDetailComponent = (data) => {
-
-    console.warn("data", data);
 
     return (
       <View style={styles.container}>
@@ -227,6 +226,51 @@ class OrderHistoryDetail extends Component {
     );
   };
 
+  reOrderProduct = async () => {
+    const { orderItemdata } = this.state
+
+    const data = new FormData();
+    data.append('order_id', orderItemdata.order_id);
+    data.append('user_id', userId);
+
+    await this.props.reOrderProduct(data)
+
+     //this.props.navigation.navigate('CartContainer',{navigation:this.props.navigation})
+
+  
+        // return <CartContainer navigation={this.props.navigation} />
+  
+  }
+
+
+  OrderDetailBottomTab = (d) => {
+    return (
+      <View style={styles.cardContainer}>
+        <View
+          style={{
+            flex: 1.8,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+          <TouchableOpacity onPress={() => alert('Detail')}>
+            <Text style={styles.detailText}>DETAIL</Text>
+          </TouchableOpacity>
+        </View>
+        <View
+          style={{
+            borderLeftWidth: 1,
+            borderLeftColor: '#fbcb84',
+            marginVertical: 5,
+          }}
+        />
+        <View style={{ flex: 2, alignItems: 'center', justifyContent: 'center' }}>
+          <TouchableOpacity onPress={() => this.reOrderProduct()}>
+            <Text style={styles.detailText}>RE-ORDER</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  };
 
   render() {
     const { orderHistoryDetailsData } = this.props
@@ -260,9 +304,7 @@ class OrderHistoryDetail extends Component {
             />
           }
 
-          {orderHistoryDetailsData &&
-            <OrderDetailBottomTab />
-          }
+          {orderHistoryDetailsData && this.OrderDetailBottomTab(orderHistoryDetailsData.order_details)}
 
           {this.state.isImageModalVisibel &&
             <View>
@@ -294,6 +336,7 @@ class OrderHistoryDetail extends Component {
             </View>
           }
 
+
           {this.props.isFetching ? this.renderLoader() : null}
 
 
@@ -315,9 +358,21 @@ const styles = StyleSheet.create({
     width: hp(9),
     height: hp(17),
     resizeMode: 'contain',
-    borderRadius:5,
-    marginLeft:-10
+    borderRadius: 5,
+    marginLeft: -10
 
+  },
+  cardContainer: {
+    width: '100%',
+    borderTopLeftRadius: 18,
+    borderTopRightRadius: 18,
+    justifyContent: 'space-between',
+    backgroundColor: '#11255a',
+    height: 48,
+    flexDirection: 'row',
+  },
+  detailText: {
+    color: '#fbcb84',
   },
   container: {
     marginHorizontal: 16,
@@ -361,8 +416,11 @@ function mapStateToProps(state) {
     errorOrderHistoryDetailsVersion: state.orderHistoryReducer.errorOrderHistoryDetailsVersion,
     orderHistoryDetailsData: state.orderHistoryReducer.orderHistoryDetailsData,
 
+    successReOrderVersion: state.orderHistoryReducer.successReOrderVersion,
+    errorReOrderVersion: state.orderHistoryReducer.errorReOrderVersion,
+    reOrderData: state.orderHistoryReducer.reOrderData,
 
   };
 }
 
-export default connect(mapStateToProps, { getOrderHistoryDetails })(OrderHistoryDetail);
+export default connect(mapStateToProps, { getOrderHistoryDetails, reOrderProduct })(OrderHistoryDetail);

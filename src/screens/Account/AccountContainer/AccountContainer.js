@@ -22,7 +22,6 @@ import Modal from 'react-native-modal';
 import { color } from '@values/colors';
 
 import { version } from "../../../../package.json"
-import { parse } from '@babel/core';
 const { width } = Dimensions.get('window');
 
 
@@ -58,9 +57,9 @@ export default class AccountContainer extends Component {
     };
   }
 
-  componentDidMount() {
-  fullName =   this.getItem();
-  }
+  // componentDidMount() {
+  // fullName =   this.getItem();
+  // }
 
 
   async getItem() {

@@ -124,3 +124,15 @@ export const ORDER_HISTORY_DETAILS_DATA_SUCCESS = "orderHistoryDetailsDataSucces
 export const ORDER_HISTORY_DETAILS_DATA_ERROR = "orderHistoryDetailsDataError";
 export const ORDER_HISTORY_DETAILS_DATA_RESET_REDUCER = "orderHistoryDetailsDataResetReducer";
 
+
+export const REORDER_DATA = "reOrderData";
+export const REORDER_DATA_SUCCESS = "reOrderDataSuccess";
+export const REORDER_DATA_ERROR = "reOrderDataError";
+export const REORDER_DATA_RESET_REDUCER = "reOrderDataResetReducer";
+
+export const DELETE_FROM_CART_WISHLIST_DATA = "deleteFromCartWishlistData";
+export const DELETE_FROM_CART_WISHLIST_DATA_SUCCESS = "deleteFromCartWishlistDataSuccess";
+export const DELETE_FROM_CART_WISHLIST_DATA_ERROR = "deleteFromCartWishlistDataError";
+export const DELETE_FROM_CART_WISHLIST_DATA_RESET_REDUCER = "deleteFromCartWishlistDataResetReducer";
+
+

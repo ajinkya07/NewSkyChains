@@ -21,6 +21,7 @@ import SearchScreen from '@search/SearchScreen';
 import Notification from '@notification/Notification';
 import Banner from '@homepage/Banner';
 import BannerImage from '@category/BannerImage'
+import CartContainer from '@cartContainer/CartContainer'
 
 
 
@@ -114,9 +115,14 @@ class Scene extends React.Component {
         <Stack.Screen name="Notification"
           component={Notification} options={{ headerShown: false }}
         />
-<Stack.Screen name="BannerImage"
+        <Stack.Screen name="BannerImage"
           component={BannerImage} options={{ headerShown: false }}
         />
+
+        <Stack.Screen name="CartContainer"
+          component={CartContainer} options={{ headerShown: false }}
+        />
+
       </Stack.Navigator>
 
     );
@@ -178,10 +184,13 @@ class Scene extends React.Component {
         <Stack.Screen name="Notification"
           component={Notification} options={{ headerShown: false }}
         />
-<Stack.Screen name="BannerImage"
+        <Stack.Screen name="BannerImage"
           component={BannerImage} options={{ headerShown: false }}
         />
 
+        <Stack.Screen name="CartContainer"
+          component={CartContainer} options={{ headerShown: false }}
+        />
 
       </Stack.Navigator>
 

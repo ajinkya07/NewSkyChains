@@ -127,7 +127,7 @@ class OrderHistory extends Component {
   renderLoader = () => {
     return (
       <View style={{
-        position: 'absolute', height: hp(90), width: wp(100),
+        position: 'absolute', height: hp(100), width: wp(100),
         alignItems: 'center', justifyContent: 'center',
       }}>
         <ActivityIndicator size="large" color={color.brandColor} />

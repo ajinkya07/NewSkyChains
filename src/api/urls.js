@@ -51,9 +51,15 @@ export const urls = {
     },
     OrderHistoryDetail:{
         url: url + "Order_history/order_details"
+    },
+    ReOrder:{
+        url:  url + 'Order_history/re_order'
+    },
+    DeleteFromCartWishList:{
+        url:  url + 'Product_Cart/delete_cart_product'
     }
+       
 
 
-    
 
 }

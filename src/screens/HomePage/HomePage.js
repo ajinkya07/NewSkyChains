@@ -201,11 +201,9 @@ class HomePage extends Component {
         }
 
         if (this.state.successTotalCartCountVersion > prevState.successTotalCartCountVersion) {
-            console.log("okok here ",totalCartCountData);
                     global.totalCartCount = totalCartCountData.count
         }
         if (this.state.errorTotalCartCountVersion > prevState.errorTotalCartCountVersion) {
-            console.log("okok here errorTotalCartCountVersion ",totalCartCountData);
                     global.totalCartCount = totalCartCountData.count
         }
 

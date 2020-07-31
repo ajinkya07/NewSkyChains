@@ -206,7 +206,7 @@ export default function _Tabs() {
                 options={{
                     tabBarLabel: 'Cart',
                     activeTintColor: color.brandColor,
-                    tabBarBadge: totalCartCount ? totalCartCount : '',
+                    tabBarBadge: totalCartCount ? totalCartCount : 0,
 
                     tabBarIcon: ({ color, size, focused }) => {
 
