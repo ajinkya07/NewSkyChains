@@ -279,6 +279,7 @@ export default function _Tabs() {
                     }
 
                 }} component={AccountScreen} />
+
         </Tab.Navigator>
 
     );

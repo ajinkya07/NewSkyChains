@@ -7,7 +7,7 @@ import {
   StyleSheet, ActivityIndicator,
   Dimensions, ScrollView, SafeAreaView
 } from 'react-native';
-import { Container, Tab, Tabs, TabHeading, Icon, Toast } from 'native-base';
+import { Container, Tab, Tabs, TabHeading, Icon, Toast, Fab } from 'native-base';
 import IconPack from '@login/IconPack';
 import {
   widthPercentageToDP as wp,
@@ -15,8 +15,9 @@ import {
 } from 'react-native-responsive-screen';
 import _Text from '@text/_Text'
 import { color } from '@values/colors';
-import { getCartData, getWishlistData, deleteCartWishListProduct,
-  getTotalCartCount
+import {
+  getCartData, getWishlistData, deleteCartWishListProduct,
+  getTotalCartCount, moveProduct, clearAllCart, clearAllWishList
 } from '@cartContainer/CartContainerAction';
 import { connect } from 'react-redux';
 import { urls } from '@api/urls'
@@ -99,9 +100,18 @@ class CartContainer extends Component {
 
       successDeleteProductVersion: 0,
       errorDeleteProductVersion: 0,
-  
+
       successTotalCartCountVersion: 0,
       errorTotalCartCountVersion: 0,
+
+      successMoveProductVersion: 0,
+      errorMoveProductVersion: 0,
+
+      successClearAllCartVersion: 0,
+      errorClearAllCartVersion: 0,
+
+      successClearAllWislistVersion: 0,
+      errorClearAllWislistVersion: 0
 
 
     };
@@ -128,10 +138,13 @@ class CartContainer extends Component {
   static getDerivedStateFromProps(nextProps, prevState) {
     const { successCartVersion, errorCartVersion,
       successWishlistVersion, errorWishlistVersion,
-      successDeleteProductVersion,errorDeleteProductVersion,
+      successDeleteProductVersion, errorDeleteProductVersion,
       successTotalCartCountVersion, errorTotalCartCountVersion,
-
+      successMoveProductVersion, errorMoveProductVersion,
+      successClearAllCartVersion, errorClearAllCartVersion,
+      successClearAllWislistVersion, errorClearAllWislistVersion
     } = nextProps;
+
     let newState = null;
 
     if (successCartVersion > prevState.successCartVersion) {
@@ -159,7 +172,7 @@ class CartContainer extends Component {
       };
     }
 
-    
+
     if (successDeleteProductVersion > prevState.successDeleteProductVersion) {
       newState = {
         ...newState,
@@ -175,16 +188,57 @@ class CartContainer extends Component {
 
     if (successTotalCartCountVersion > prevState.successTotalCartCountVersion) {
       newState = {
-          ...newState,
-          successTotalCartCountVersion: nextProps.successTotalCartCountVersion,
+        ...newState,
+        successTotalCartCountVersion: nextProps.successTotalCartCountVersion,
       };
-  }
-  if (errorTotalCartCountVersion > prevState.errorTotalCartCountVersion) {
+    }
+    if (errorTotalCartCountVersion > prevState.errorTotalCartCountVersion) {
       newState = {
-          ...newState,
-          errorTotalCartCountVersion: nextProps.errorTotalCartCountVersion,
+        ...newState,
+        errorTotalCartCountVersion: nextProps.errorTotalCartCountVersion,
       };
-  }
+    }
+
+
+    if (successMoveProductVersion > prevState.successMoveProductVersion) {
+      newState = {
+        ...newState,
+        successMoveProductVersion: nextProps.successMoveProductVersion,
+      };
+    }
+    if (errorMoveProductVersion > prevState.errorMoveProductVersion) {
+      newState = {
+        ...newState,
+        errorMoveProductVersion: nextProps.errorMoveProductVersion,
+      };
+    }
+
+    if (successClearAllCartVersion > prevState.successClearAllCartVersion) {
+      newState = {
+        ...newState,
+        successClearAllCartVersion: nextProps.successClearAllCartVersion,
+      };
+    }
+    if (errorClearAllCartVersion > prevState.errorClearAllCartVersion) {
+      newState = {
+        ...newState,
+        errorClearAllCartVersion: nextProps.errorClearAllCartVersion,
+      };
+    }
+
+
+    if (successClearAllWislistVersion > prevState.successClearAllWislistVersion) {
+      newState = {
+        ...newState,
+        successClearAllWislistVersion: nextProps.successClearAllWislistVersion,
+      };
+    }
+    if (errorClearAllWislistVersion > prevState.errorClearAllWislistVersion) {
+      newState = {
+        ...newState,
+        errorClearAllWislistVersion: nextProps.errorClearAllWislistVersion,
+      };
+    }
 
     return newState;
   }
@@ -218,11 +272,11 @@ class CartContainer extends Component {
       })
     }
 
-    
+
     if (this.state.successDeleteProductVersion > prevState.successDeleteProductVersion) {
       Toast.show({
-        text:this.props.errorMsg ? this.props.errorMsg : '',
-        duration:2500
+        text: this.props.errorMsg ? this.props.errorMsg : '',
+        duration: 2500
       })
       const data5 = new FormData();
       data5.append('user_id', userId);
@@ -236,23 +290,21 @@ class CartContainer extends Component {
 
       await this.props.getWishlistData(data6)
 
-      if(this.state.currentPage == 0){
-      const data7 = new FormData();
-      data7.append('user_id', userId);
-      data7.append('table', 'cart');
-  
-      await this.props.getTotalCartCount(data7)
-      }
-  
+      if (this.state.currentPage == 0) {
+        const data7 = new FormData();
+        data7.append('user_id', userId);
+        data7.append('table', 'cart');
 
+        await this.props.getTotalCartCount(data7)
+      }
     }
 
-    
+
     if (this.state.errorDeleteProductVersion > prevState.errorDeleteProductVersion) {
       Toast.show({
-        text:this.props.errorMsg ? this.props.errorMsg : strings.serverFailedMsg,
-        duration:2500,
-        type:'danger'
+        text: this.props.errorMsg ? this.props.errorMsg : strings.serverFailedMsg,
+        duration: 2500,
+        type: 'danger'
       })
     }
 
@@ -263,7 +315,84 @@ class CartContainer extends Component {
       global.totalCartCount = totalCartCountData.count
     }
 
+    if (this.state.successMoveProductVersion > prevState.successMoveProductVersion) {
+      Toast.show({
+        text: this.props.errorMsg ? this.props.errorMsg : '',
+        duration: 2500
+      })
+      const data9 = new FormData();
+      data9.append('user_id', userId);
+      data9.append('table', 'cart');
+
+      await this.props.getCartData(data9)
+
+      const data8 = new FormData();
+      data8.append('user_id', userId);
+      data8.append('table', 'wishlist');
+
+      await this.props.getWishlistData(data8)
+
+    }
+
+    if (this.state.errorMoveProductVersion > prevState.errorMoveProductVersion) {
+      Toast.show({
+        text: this.props.errorMsg ? this.props.errorMsg : strings.serverFailedMsg,
+        duration: 2500,
+        type: 'danger'
+      })
+    }
+
+    if (this.state.successClearAllCartVersion > prevState.successClearAllCartVersion) {
+      Toast.show({
+        text: this.props.errorMsg ? this.props.errorMsg : strings.serverFailedMsg,
+        duration: 2500,
+      })
+
+      console.warn("to clear cart");
+      const c = new FormData();
+      c.append('user_id', userId);
+      c.append('table', 'cart');
+
+      await this.props.getCartData(c)
+
+    }
+    if (this.state.errorClearAllCartVersion > prevState.errorClearAllCartVersion) {
+      Toast.show({
+        text: this.props.errorMsg ? this.props.errorMsg : strings.serverFailedMsg,
+        duration: 2500,
+        type: 'danger'
+      })
+    }
+
+
+    if (this.state.successClearAllWislistVersion > prevState.successClearAllWislistVersion) {
+      Toast.show({
+        text: this.props.errorMsg ? this.props.errorMsg : strings.serverFailedMsg,
+        duration: 2500,
+      })
+      console.warn("to clear wishlist");
+
+      const w = new FormData();
+      w.append('user_id', userId);
+      w.append('table', 'wishlist');
+
+      await this.props.getWishlistData(w)
+
+    }
+
+    if (this.state.errorClearAllWislistVersion > prevState.errorClearAllWislistVersion) {
+      Toast.show({
+        text: this.props.errorMsg ? this.props.errorMsg : strings.serverFailedMsg,
+        duration: 2500,
+        type: 'danger'
+      })
+    }
+
+
+
   }
+
+
 
   renderLoader = () => {
     return (
@@ -293,6 +422,43 @@ class CartContainer extends Component {
       isToggle: !this.state.isToggle,
       openMoreDetailsIdwish: data.cart_wish_id
     })
+  }
+
+  moveFromwishlist = async (k) => {
+    const moveToData = new FormData();
+    moveToData.append('user_id', userId);
+    moveToData.append('to_table', 'cart');
+    moveToData.append('from_table', 'wishlist');
+    moveToData.append('id', k.cart_wish_id);
+
+
+    await this.props.moveProduct(moveToData)
+
+    const d = new FormData();
+    d.append('user_id', userId);
+    d.append('table', 'cart');
+
+    await this.props.getTotalCartCount(d)
+  }
+
+
+  moveFromCart = async (m) => {
+    const moveToData1 = new FormData();
+    moveToData1.append('user_id', userId);
+    moveToData1.append('to_table', 'wishlist');
+    moveToData1.append('from_table', 'cart');
+    moveToData1.append('id', m.cart_wish_id);
+
+
+    await this.props.moveProduct(moveToData1)
+
+    const d = new FormData();
+    d.append('user_id', userId);
+    d.append('table', 'cart');
+
+    await this.props.getTotalCartCount(d)
+
+
   }
 
 
@@ -363,7 +529,7 @@ class CartContainer extends Component {
                 </View>
               </View>
               <View style={styles.tabCartBottomContainer}>
-                <TouchableOpacity onPress={() => alert('MoveToCart')}>
+                <TouchableOpacity onPress={() => this.moveFromwishlist(data)}>
                   <View style={styles.tabCartBottomImgView}>
                     <Image
                       style={styles.tabCartBottomImg}
@@ -390,25 +556,25 @@ class CartContainer extends Component {
   };
 
 
-  deleteFromCart = async(i) =>{
+  deleteFromCart = async (i) => {
     const deleteData = new FormData();
     deleteData.append('user_id', userId);
     deleteData.append('table', 'cart');
     deleteData.append('id', i.cart_wish_id);
 
-    await  this.props.deleteCartWishListProduct(deleteData)
+    await this.props.deleteCartWishListProduct(deleteData)
 
   }
 
 
-  deleteFromWishlist = async(j) =>{
-    
+  deleteFromWishlist = async (j) => {
+
     const wishData = new FormData();
     wishData.append('user_id', userId);
     wishData.append('table', 'wishlist');
     wishData.append('id', j.cart_wish_id);
 
-    await  this.props.deleteCartWishListProduct(wishData)
+    await this.props.deleteCartWishListProduct(wishData)
 
   }
 
@@ -531,7 +697,7 @@ class CartContainer extends Component {
                     <Text style={styles.btnText}>EDIT</Text>
                   </View>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => alert('MoveToWishList')}>
+                <TouchableOpacity onPress={() => this.moveFromCart(item)}>
                   <View style={styles.tabCartBottomImgView}>
                     <Image
                       style={styles.tabCartBottomImg}
@@ -593,6 +759,24 @@ class CartContainer extends Component {
       imageToBeDisplayed: item,
       isCartImageModalVisibel: true
     })
+  }
+
+  deleteAllProduct = () => {
+    const { currentPage } = this.state
+
+    const deleteData = new FormData();
+    deleteData.append('user_id', userId);
+    deleteData.append('table', currentPage == 0 ? 'cart' : 'wishlist');
+
+
+    if (currentPage == 0) {
+      this.props.clearAllCart(deleteData)
+    }
+    else if (currentPage == 1) {
+      this.props.clearAllWishList(deleteData)
+
+    }
+
   }
 
   render() {
@@ -717,12 +901,50 @@ class CartContainer extends Component {
           </View>
         }
 
+        {this.state.currentPage == 0 && cartData.length > 0 &&
+          <TouchableOpacity
+            hitSlop={{ position: 'absolute', top: 5, bottom: 5, left: 5, right: 5 }}
+            style={styles.bottomView} onPress={() => this.deleteAllProduct()}>
+            <Image source={require('../../assets/image/Delete.png')}
+              style={{ height: hp(3), width: hp(3) }}
+              resizeMode='contain'
+            />
+          </TouchableOpacity>
+        }
+
+        {this.state.currentPage == 1 && wishlistData.length > 0 &&
+          <TouchableOpacity
+            hitSlop={{ position: 'absolute', top: 5, bottom: 5, left: 5, right: 5 }}
+            style={styles.bottomView} onPress={() => this.deleteAllProduct()}>
+            <Image source={require('../../assets/image/Delete.png')}
+              style={{ height: hp(3), width: hp(3) }}
+              resizeMode='contain'
+            />
+          </TouchableOpacity>
+        }
+
       </Container>
     );
   }
 }
 
 const styles = StyleSheet.create({
+  bottomView: {
+    width: hp(5.8),
+    height: hp(5.8),
+    borderRadius: hp(5.8) / 2,
+    backgroundColor: '#EE5407',
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'flex-end',
+    position: 'absolute', //Here is the trick
+    bottom: hp(8), //Here is the trick
+    right: hp(2)
+  },
+  textStyle: {
+    color: '#fff',
+    fontSize: 18,
+  },
   tabCartTopContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -794,6 +1016,7 @@ const styles = StyleSheet.create({
   },
   btnText: {
     fontSize: 12,
+    color: color.brandColor
   },
   border: {
     marginHorizontal: 18,
@@ -841,8 +1064,20 @@ function mapStateToProps(state) {
     errorTotalCartCountVersion: state.cartContainerReducer.errorTotalCartCountVersion,
     totalCartCountData: state.cartContainerReducer.totalCartCountData,
 
+    successMoveProductVersion: state.cartContainerReducer.successMoveProductVersion,
+    errorMoveProductVersion: state.cartContainerReducer.errorMoveProductVersion,
+
+    successClearAllCartVersion: state.cartContainerReducer.successClearAllCartVersion,
+    errorClearAllCartVersion: state.cartContainerReducer.errorClearAllCartVersion,
+
+    successClearAllWislistVersion: state.cartContainerReducer.successClearAllWislistVersion,
+    errorClearAllWislistVersion: state.cartContainerReducer.errorClearAllWislistVersion,
+
   };
 }
 
-export default connect(mapStateToProps, { getCartData, getWishlistData,
-  deleteCartWishListProduct, getTotalCartCount })(withNavigationFocus(CartContainer));
+export default connect(mapStateToProps, {
+  getCartData, getWishlistData,
+  deleteCartWishListProduct, getTotalCartCount, moveProduct,
+  clearAllCart, clearAllWishList
+})(withNavigationFocus(CartContainer));

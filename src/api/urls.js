@@ -57,9 +57,14 @@ export const urls = {
     },
     DeleteFromCartWishList:{
         url:  url + 'Product_Cart/delete_cart_product'
-    }
-       
+    },
+    MoveProduct:{
+        url:  url + 'Product_Cart/move_products'
+    },       
 
+    ClearCartWishlistData:{
+        url:  url + 'Product_Cart/clear_cart_data'
+    },       
 
 
 }

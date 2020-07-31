@@ -18,6 +18,22 @@ import {
     TOTAL_CART_COUNT_DATA_SUCCESS,
     TOTAL_CART_COUNT_DATA_ERROR,
     TOTAL_CART_COUNT_DATA_RESET_REDUCER,
+
+    MOVE_PRODUCT_DATA,
+    MOVE_PRODUCT_DATA_SUCCESS,
+    MOVE_PRODUCT_DATA_ERROR,
+    MOVE_PRODUCT_DATA_RESET_REDUCER,
+
+    CLEAR_ALL_CART_DATA,
+    CLEAR_ALL_CART_DATA_SUCCESS,
+    CLEAR_ALL_CART_DATA_ERROR,
+    CLEAR_ALL_CART_DATA_RESET_REDUCER,
+
+    CLEAR_ALL_WISHLIST_DATA,
+    CLEAR_ALL_WISHLIST_DATA_SUCCESS,
+    CLEAR_ALL_WISHLIST_DATA_ERROR,
+    CLEAR_ALL_WISHLIST_DATA_RESET_REDUCER,
+
   
   } from "@redux/types";
   
@@ -78,7 +94,6 @@ import {
   }
   
   export function getWishlistData(data) {
-    console.warn("getWishlistData here");
       return dispatch => {
         dispatch(showLoadingIndicator(WISHLIST_DATA));
     
@@ -109,7 +124,6 @@ import {
         dispatch(showLoadingIndicator(DELETE_FROM_CART_WISHLIST_DATA));
     
         axios.post(urls.DeleteFromCartWishList.url, data, header).then(response => {
-          console.warn("response",response.data);
             if (response.data.ack ==='1') {
               dispatch(
                 onSuccess(response.data, DELETE_FROM_CART_WISHLIST_DATA_SUCCESS)
@@ -151,6 +165,87 @@ export function getTotalCartCount(data) {
       .catch(function (error) {
         dispatch(
           onFailure(strings.serverFailedMsg, TOTAL_CART_COUNT_DATA_ERROR)
+        );
+      });
+  }
+}
+
+
+   
+export function moveProduct(data) {
+  return dispatch => {
+    dispatch(showLoadingIndicator(MOVE_PRODUCT_DATA));
+
+    axios.post(urls.MoveProduct.url, data, header).then(response => {
+      if (response.data.ack === '1') {
+        dispatch(
+          onSuccess(response.data, MOVE_PRODUCT_DATA_SUCCESS)
+        )
+      }
+      else {
+        dispatch(
+          onFailure(response.data.msg, MOVE_PRODUCT_DATA_ERROR)
+        )
+      }
+    })
+      .catch(function (error) {
+        dispatch(
+          onFailure(strings.serverFailedMsg, MOVE_PRODUCT_DATA_ERROR)
+        );
+      });
+  }
+}
+
+
+
+
+export function clearAllCart(data) {
+  return dispatch => {
+    dispatch(showLoadingIndicator(CLEAR_ALL_CART_DATA));
+
+    axios.post(urls.ClearCartWishlistData.url, data, header).then(response => {
+      console.warn("response cart clear",response.data);
+
+      if (response.data.ack === '1') {
+        dispatch(
+          onSuccess(response.data, CLEAR_ALL_CART_DATA_SUCCESS)
+        )
+      }
+      else {
+        dispatch(
+          onFailure(response.data.msg, CLEAR_ALL_CART_DATA_ERROR)
+        )
+      }
+    })
+      .catch(function (error) {
+        dispatch(
+          onFailure(strings.serverFailedMsg, CLEAR_ALL_CART_DATA_ERROR)
+        );
+      });
+  }
+}
+
+
+export function clearAllWishList(data) {
+  return dispatch => {
+    dispatch(showLoadingIndicator(CLEAR_ALL_WISHLIST_DATA));
+
+    axios.post(urls.ClearCartWishlistData.url, data, header).then(response => {
+      console.warn("response wishlist clear",response.data);
+      if (response.data.ack === '1') {
+        dispatch(
+          onSuccess(response.data, CLEAR_ALL_WISHLIST_DATA_SUCCESS)
+        )
+      }
+      else {
+        dispatch(
+          onFailure(response.data.msg, CLEAR_ALL_WISHLIST_DATA_ERROR)
+        )
+      }
+    })
+      .catch(function (error) {
+        dispatch(
+          onFailure(strings.serverFailedMsg, CLEAR_ALL_WISHLIST_DATA_ERROR)
         );
       });
   }

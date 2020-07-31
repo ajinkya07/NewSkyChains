@@ -136,3 +136,20 @@ export const DELETE_FROM_CART_WISHLIST_DATA_ERROR = "deleteFromCartWishlistDataE
 export const DELETE_FROM_CART_WISHLIST_DATA_RESET_REDUCER = "deleteFromCartWishlistDataResetReducer";
 
 
+export const MOVE_PRODUCT_DATA = "moveProductData";
+export const MOVE_PRODUCT_DATA_SUCCESS = "moveProductDataSuccess";
+export const MOVE_PRODUCT_DATA_ERROR = "moveProductDataError";
+export const MOVE_PRODUCT_DATA_RESET_REDUCER = "moveProductDataResetReducer";
+
+
+
+export const CLEAR_ALL_CART_DATA = "clearCartData";
+export const CLEAR_ALL_CART_DATA_SUCCESS = "clearCartDataSuccess";
+export const CLEAR_ALL_CART_DATA_ERROR = "clearCartDataError";
+export const CLEAR_ALL_CART_DATA_RESET_REDUCER = "clearCartDataResetReducer";
+
+
+export const CLEAR_ALL_WISHLIST_DATA = "clearWishlistData";
+export const CLEAR_ALL_WISHLIST_DATA_SUCCESS = "clearWishlistDataSuccess";
+export const CLEAR_ALL_WISHLIST_DATA_ERROR = "clearWishlistDataError";
+export const CLEAR_ALL_WISHLIST_DATA_RESET_REDUCER = "clearWishlistDataResetReducer";

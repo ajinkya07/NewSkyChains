@@ -18,6 +18,22 @@ import {
     TOTAL_CART_COUNT_DATA_SUCCESS,
     TOTAL_CART_COUNT_DATA_ERROR,
     TOTAL_CART_COUNT_DATA_RESET_REDUCER,
+
+    MOVE_PRODUCT_DATA,
+    MOVE_PRODUCT_DATA_SUCCESS,
+    MOVE_PRODUCT_DATA_ERROR,
+    MOVE_PRODUCT_DATA_RESET_REDUCER,
+
+    CLEAR_ALL_CART_DATA,
+    CLEAR_ALL_CART_DATA_SUCCESS,
+    CLEAR_ALL_CART_DATA_ERROR,
+    CLEAR_ALL_CART_DATA_RESET_REDUCER,
+
+    
+    CLEAR_ALL_WISHLIST_DATA,
+    CLEAR_ALL_WISHLIST_DATA_SUCCESS,
+    CLEAR_ALL_WISHLIST_DATA_ERROR,
+    CLEAR_ALL_WISHLIST_DATA_RESET_REDUCER,
   
 } from "@redux/types";
 import { act } from "react-test-renderer";
@@ -26,9 +42,9 @@ import { act } from "react-test-renderer";
 const initialState = {
     isFetching: false,
     error: false,
-    errorMsg:'',
+    errorMsg: '',
     errorMsgCart: "",
-    errorMsgWishlist:"",
+    errorMsgWishlist: "",
     successCartVersion: 0,
     errorCartVersion: 0,
     cartData: [],
@@ -36,7 +52,7 @@ const initialState = {
     successWishlistVersion: 0,
     errorWishlistVersion: 0,
     wishlistData: [],
-    
+
     successDeleteProductVersion: 0,
     errorDeleteProductVersion: 0,
     deleteProductData: [],
@@ -44,7 +60,18 @@ const initialState = {
     successTotalCartCountVersion: 0,
     errorTotalCartCountVersion: 0,
     totalCartCountData: [],
-  
+
+    successMoveProductVersion: 0,
+    errorMoveProductVersion: 0,
+
+    successClearAllCartVersion:0,
+    errorClearAllCartVersion:0,
+
+    successClearAllWislistVersion:0,
+    errorClearAllWislistVersion:0
+
+
+
 };
 
 
@@ -74,7 +101,7 @@ export default function dataReducer(state = initialState, action) {
                 isFetching: false,
                 error: true,
                 errorMsgCart: action.error,
-                cartData:[],
+                cartData: [],
                 errorCartVersion: ++state.errorCartVersion
             };
 
@@ -111,65 +138,152 @@ export default function dataReducer(state = initialState, action) {
             return initialState;
 
 
-            case DELETE_FROM_CART_WISHLIST_DATA:
-                return {
-                    ...state,
-                    isFetching: true
-                };
-    
-            case DELETE_FROM_CART_WISHLIST_DATA_SUCCESS:
-                return {
-                    ...state,
-                    errorMsg: action.data.msg,
-                    isFetching: false,
-                    deleteProductData: action.data.data,
-                    successDeleteProductVersion: ++state.successDeleteProductVersion,
-                    error: false
-                };
-    
-            case DELETE_FROM_CART_WISHLIST_DATA_ERROR:
-                return {
-                    ...state,
-                    isFetching: false,
-                    error: true,
-                    errorMsg: action.error,
-                    errorDeleteProductVersion: ++state.errorDeleteProductVersion
-                };
-    
-            case DELETE_FROM_CART_WISHLIST_DATA_RESET_REDUCER:
-                return initialState;
-    
+        case DELETE_FROM_CART_WISHLIST_DATA:
+            return {
+                ...state,
+                isFetching: true
+            };
 
-                case TOTAL_CART_COUNT_DATA:
+        case DELETE_FROM_CART_WISHLIST_DATA_SUCCESS:
+            return {
+                ...state,
+                errorMsg: action.data.msg,
+                isFetching: false,
+                deleteProductData: action.data.data,
+                successDeleteProductVersion: ++state.successDeleteProductVersion,
+                error: false
+            };
+
+        case DELETE_FROM_CART_WISHLIST_DATA_ERROR:
+            return {
+                ...state,
+                isFetching: false,
+                error: true,
+                errorMsg: action.error,
+                errorDeleteProductVersion: ++state.errorDeleteProductVersion
+            };
+
+        case DELETE_FROM_CART_WISHLIST_DATA_RESET_REDUCER:
+            return initialState;
+
+
+        case TOTAL_CART_COUNT_DATA:
+            return {
+                ...state,
+                isFetching: true
+            };
+
+        case TOTAL_CART_COUNT_DATA_SUCCESS:
+            return {
+                ...state,
+                errorMsg: "",
+                isFetching: false,
+                totalCartCountData: action.data.data,
+                successTotalCartCountVersion: ++state.successTotalCartCountVersion,
+                error: false
+            };
+
+        case TOTAL_CART_COUNT_DATA_ERROR:
+            return {
+                ...state,
+                isFetching: false,
+                error: true,
+                errorMsg: action.error,
+                totalCartCountData: { count: 0 },
+                errorTotalCartCountVersion: ++state.errorTotalCartCountVersion
+            };
+
+        case TOTAL_CART_COUNT_DATA_RESET_REDUCER:
+            return initialState;
+
+
+            case MOVE_PRODUCT_DATA:
+                return {
+                  ...state,
+                  isFetching: true
+                };
+          
+              case MOVE_PRODUCT_DATA_SUCCESS:
+                return {
+                  ...state,
+                  errorMsg: action.data.msg,
+                  isFetching: false,
+                  successMoveProductVersion: ++state.successMoveProductVersion,
+                  error: false
+                };
+          
+              case MOVE_PRODUCT_DATA_ERROR:
+                return {
+                  ...state,
+                  isFetching: false,
+                  error: true,
+                  errorMsg: action.error,
+                  errorMoveProductVersion: ++state.errorMoveProductVersion
+                };
+          
+              case MOVE_PRODUCT_DATA_RESET_REDUCER:
+                return initialState;
+          
+                case CLEAR_ALL_CART_DATA:
                     return {
                       ...state,
                       isFetching: true
                     };
               
-                  case TOTAL_CART_COUNT_DATA_SUCCESS:
+                  case CLEAR_ALL_CART_DATA_SUCCESS:
                     return {
                       ...state,
-                      errorMsg: "",
+                      errorMsg: action.data.msg,
                       isFetching: false,
-                      totalCartCountData: action.data.data,
-                      successTotalCartCountVersion: ++state.successTotalCartCountVersion,
+                    //   cartData:[],
+                      successClearAllCartVersion: ++state.successClearAllCartVersion,
                       error: false
                     };
               
-                  case TOTAL_CART_COUNT_DATA_ERROR:
+                  case CLEAR_ALL_CART_DATA_ERROR:
                     return {
                       ...state,
                       isFetching: false,
                       error: true,
                       errorMsg: action.error,
-                      totalCartCountData:{count:0},
-                      errorTotalCartCountVersion: ++state.errorTotalCartCountVersion
+                      errorClearAllCartVersion: ++state.errorClearAllCartVersion
                     };
               
-                  case TOTAL_CART_COUNT_DATA_RESET_REDUCER:
+                  case CLEAR_ALL_CART_DATA_RESET_REDUCER:
                     return initialState;
+          
+
+
+                       
+                case CLEAR_ALL_WISHLIST_DATA:
+                    return {
+                      ...state,
+                      isFetching: true
+                    };
               
-    
+                  case CLEAR_ALL_WISHLIST_DATA_SUCCESS:
+                    return {
+                      ...state,
+                      errorMsg: action.data.msg,
+                      isFetching: false,
+                    //   wishlistData:[],
+                      successClearAllWislistVersion: ++state.successClearAllWislistVersion,
+                      error: false
+                    };
+              
+                  case CLEAR_ALL_WISHLIST_DATA_ERROR:
+                    return {
+                      ...state,
+                      isFetching: false,
+                      error: true,
+                      errorMsg: action.error,
+                      errorClearAllWislistVersion: ++state.errorClearAllWislistVersion
+                    };
+              
+                  case CLEAR_ALL_WISHLIST_DATA_RESET_REDUCER:
+                    return initialState;
+       
+
         default:
             return state;
     }
