@@ -17,8 +17,11 @@ import IconPack from '@login/IconPack';
 import { strings } from '@values/strings';
 import FloatingLabelTextInput from '@floatingInputBox/FloatingLabelTextInput';
 const {width} = Dimensions.get('window');
-// import DateTimePicker from 'react-native-modal-datetime-picker';
+ import DateTimePicker from 'react-native-modal-datetime-picker';
 
+
+
+ 
 export default class PlaceorderModal extends Component {
   constructor(props) {
     super(props);
@@ -50,6 +53,7 @@ export default class PlaceorderModal extends Component {
     //console.log('A date has been picked: ', date);
     this.hideDateTimePicker();
   }
+
   toggleModal = () => {
     this.setState({isModalVisible: !this.state.isModalVisible});
   };
@@ -169,14 +173,14 @@ export default class PlaceorderModal extends Component {
                         </TouchableOpacity>
                       </View>
                     </View>
-{/* 
+
                     {isDateTimePickerVisible && (
                       <DateTimePicker
                         isVisible={isDateTimePickerVisible}
                         onConfirm={date => this.handleDatePicked(date)}
                         onCancel={() => hideDateTimePicker()}
                       />
-                    )} */}
+                    )}
                   </View>
                   <View style={styles.btnView}>
                     <ActionButtonRounded
@@ -191,6 +195,7 @@ export default class PlaceorderModal extends Component {
           </View>
           {/* </TouchableWithoutFeedback> */}
         </Modal>
+   
       </>
     );
   }

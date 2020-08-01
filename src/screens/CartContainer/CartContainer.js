@@ -2,12 +2,12 @@ import React, { Component, useState } from 'react';
 import {
   View,
   Text,
-  Image,TouchableWithoutFeedback,
+  Image, TouchableWithoutFeedback,
   TouchableOpacity, FlatList,
   StyleSheet, ActivityIndicator,
   Dimensions, ScrollView, SafeAreaView
 } from 'react-native';
-import { Container, Tab, Tabs, TabHeading, Icon, Toast, Fab,Picker } from 'native-base';
+import { Container, Tab, Tabs, TabHeading, Icon, Toast, Fab, Picker } from 'native-base';
 import IconPack from '@login/IconPack';
 import {
   widthPercentageToDP as wp,
@@ -25,6 +25,7 @@ import Modal from 'react-native-modal';
 import { withNavigationFocus } from "@react-navigation/compat";
 import { strings } from '@values/strings';
 import FloatingLabelTextInput from '@floatingInputBox/FloatingLabelTextInput';
+import DateTimePicker from 'react-native-modal-datetime-picker';
 
 
 
@@ -79,7 +80,7 @@ const actionButtonRoundedStyle = StyleSheet.create({
 
 
 
-const ActionButtonRounded2 = ({title, onButonPress, containerStyle}) => {
+const ActionButtonRounded2 = ({ title, onButonPress, containerStyle }) => {
   return (
     <TouchableOpacity
       onPress={() => {
@@ -162,14 +163,22 @@ class CartContainer extends Component {
       successClearAllWislistVersion: 0,
       errorClearAllWislistVersion: 0,
 
+      shoPlaceOrderView: false,
       comments: '',
       productcode: '',
       productName: '',
       quantity: '',
       length: '',
-      weight:[],
+      weight: [],
       isModalVisible: false,
-
+      date:'',
+      isPlaceOrderModalVisible:false,
+      name: '',
+      mobileNo: '1980110078',
+      comments1: '',
+      value: '',
+      email: 'John@mailinator.com',
+      isDateTimePickerVisible: false,
 
     };
     userId = global.userId;
@@ -674,20 +683,21 @@ class CartContainer extends Component {
   }
 
   editCartProduct = (editData) => {
-    console.warn("editData",editData);
+    console.warn("editData", editData);
 
-    this.setState({ isModalVisible: true,
-     productcode:editData.collection_sku_code,
-     productName:editData.collection_name,
-     quantity:editData.values[2],
-     comments:editData.values[3] !== null ? editData.values[3] : '',
-     length:editData.values[4],
-    weight:editData.weight
-     
+    this.setState({
+      isModalVisible: true,
+      productcode: editData.collection_sku_code,
+      productName: editData.collection_name,
+      quantity: editData.values[2],
+      comments: editData.values[3] !== null ? editData.values[3] : '',
+      length: editData.values[4],
+      weight: editData.weight
+
 
     });
   }
-  closeEditModal = () =>{
+  closeEditModal = () => {
     this.setState({ isModalVisible: false });
 
   }
@@ -732,12 +742,12 @@ class CartContainer extends Component {
     this.setState({
       length: '',
     });
-   
-    setSelectedValue = (value) =>{
-      this.setState({
-        weight:value
-      })
-    }
+
+  setSelectedValue = (value) => {
+    this.setState({
+      weight: value
+    })
+  }
   cartView = (item) => {
     // const [isToggle, setToggleView] = useState(false);
 
@@ -844,6 +854,71 @@ class CartContainer extends Component {
     );
   };
 
+//FOR PLACE ORDER MODAL 
+
+showDateTimePicker = () => {
+  this.setState({
+    isDateTimePickerVisible: true,
+  });
+};
+
+hideDateTimePicker = () => {
+  this.setState({
+    isDateTimePickerVisible: false,
+  });
+};
+handleDatePicked(date) {
+  console.warn('A date has been picked: ', date);
+  this.setState({
+    date:date.toString(),
+    isDateTimePickerVisible: false,
+
+  })
+}
+
+handleNameChange = newText =>
+  this.setState({
+    name: newText,
+  });
+
+handleEmailChange = newText =>
+  this.setState({
+    email: newText,
+  });
+handleMobileChange = newText =>
+  this.setState({
+    mobileNo: newText,
+  });
+handleCommentsChange1 = newText =>
+  this.setState({
+    comments1: newText,
+  });
+
+resetFieldEmail = () =>
+  this.setState({
+    email: '',
+  });
+  
+resetFieldEmail1 = () =>
+this.setState({
+  email: '',
+});
+resetFieldName = () =>
+  this.setState({
+    name: '',
+  });
+resetFieldMobileNo = () =>
+  this.setState({
+    mobileNo: '',
+  });
+resetFieldComment1 = () =>
+  this.setState({
+    comments: '',
+  });
+
+
+
+
 
 
   CartDetails = (cartData) => {
@@ -900,9 +975,25 @@ class CartContainer extends Component {
 
   }
 
+  placeOrderView = () => {
+    this.setState({
+      isPlaceOrderModalVisible: true
+    })
+  }
+
+  closePlaceOrder = () => {
+  
+    this.setState({
+      isPlaceOrderModalVisible: false
+    })
+  }
+
+
   render() {
     const { cartData, wishlistData, isFetching } = this.props
-    const { wishStateData, cartStateData, isCartImageModalVisibel, imageToBeDisplayed } = this.state
+    const { wishStateData, cartStateData, isCartImageModalVisibel, 
+      isDateTimePickerVisible,
+      imageToBeDisplayed } = this.state
 
     let url = 'http://jewel.jewelmarts.in/public/backend/product_images/zoom_image/'
 
@@ -961,7 +1052,7 @@ class CartContainer extends Component {
             />
             <ActionButtonRounded
               title="PLACE ORDER"
-              onButonPress={() => alert('PlaceOrder')}
+              onButonPress={() => this.placeOrderView()}
               containerStyle={styles.buttonStyle}
             />
           </View> : null
@@ -1076,14 +1167,14 @@ class CartContainer extends Component {
                     />
                   </TouchableOpacity>
                 </View>
-        
+
                 <View
                   style={{
                     borderBottomColor: '#a3a3a3',
                     borderBottomWidth: 0.5,
                   }}></View>
-           
-           
+
+
                 <View style={{ marginHorizontal: 20, marginTop: 5 }}>
                   <FloatingLabelTextInput
                     label="Code"
@@ -1117,19 +1208,19 @@ class CartContainer extends Component {
                     marginLeft={8}
                   />
                 </View>
-                <View style={{  }}>
-                  <Text style={{marginLeft: 58, fontSize: 16, color: '#a3a3a3' }}>
+                <View style={{}}>
+                  <Text style={{ marginLeft: 58, fontSize: 16, color: '#a3a3a3' }}>
                     Select Weight
                     </Text>
                   <Picker
                     iosIcon={<Icon name="arrow-down" style={{ marginRight: hp(3), fontSize: 25 }} />}
                     mode="dropdown"
-                    style={{ marginLeft: 52,height: 45, width: '70%' }}
+                    style={{ marginLeft: 52, height: 45, width: '70%' }}
                     selectedValue={this.state.weight}
                     onValueChange={(itemValue, itemIndex) => this.setSelectedValue(itemValue)}>
-                      {this.state.weight.map((w) =>(
-                    <Picker.Item label={(w).toString()} value={parseInt(w)} />
-                      ))}
+                    {this.state.weight.map((w) => (
+                      <Picker.Item label={(w).toString()} value={parseInt(w)} />
+                    ))}
                   </Picker>
                 </View>
 
@@ -1137,7 +1228,7 @@ class CartContainer extends Component {
                   <FloatingLabelTextInput
                     label="Length (inches)"
                     value={this.state.length}
-                    onChangeText={(l)=> this.handleLengthChange(l)}
+                    onChangeText={(l) => this.handleLengthChange(l)}
                     resetValue={this.resetFieldLength}
                     imageIcon="email"
                     keyboardType="numeric"
@@ -1148,7 +1239,7 @@ class CartContainer extends Component {
                   <FloatingLabelTextInput
                     label="Comments"
                     value={this.state.comments}
-                    onChangeText={(c)=> this.handleCommentsChange(c)}
+                    onChangeText={(c) => this.handleCommentsChange(c)}
                     resetValue={this.resetFieldComment}
                     imageIcon="comments"
                     width="95%"
@@ -1169,6 +1260,123 @@ class CartContainer extends Component {
         </Modal>
 
 
+
+
+        <Modal
+          style={{
+            justifyContent: 'flex-end',
+            marginBottom: 0,
+            marginLeft: 0,
+            marginRight: 0,
+          }}
+
+          isVisible={this.state.isPlaceOrderModalVisible}
+          transparent={true}
+          onRequestClose={() => this.setState({ isPlaceOrderModalVisible: false })}
+          onBackdropPress={() => this.setState({ isPlaceOrderModalVisible: false })}
+          onBackButtonPress={() => this.setState({ isPlaceOrderModalVisible: false })}>
+
+          {/* <TouchableWithoutFeedback
+            style={{flex: 1}}
+            onPress={() =>
+              this.setState({
+                isModalVisible: false,
+              })
+            }> */}
+          {/* <View style={styles.mainContainer}> */}
+          <TouchableWithoutFeedback style={{ flex: 1 }} onPress={() => null}>
+            <View style={styles.bottomContainer}>
+              <ScrollView>
+                <View style={{ marginHorizontal: 20, marginTop: 5 }}>
+                  <FloatingLabelTextInput
+                    label="Name"
+                    value={this.state.name}
+                    onChangeText={this.handleNameChange}
+                    resetValue={this.resetFieldName}
+                    imageIcon="email"
+                    width="95%"
+                    marginLeft={8}
+                  />
+                  <FloatingLabelTextInput
+                    label="Email"
+                    value={this.state.email}
+                    onChangeText={this.handleEmailChange}
+                    resetValue={this.resetFieldEmail1}
+                    imageIcon="email"
+                    editable={false}
+                    selectTextOnFocus={false}
+                    width="95%"
+                    marginLeft={8}
+                  />
+                  <FloatingLabelTextInput
+                    label="Mobile"
+                    value={this.state.mobileNo}
+                    onChangeText={this.handleMobileChange}
+                    resetValue={this.resetFieldMobileNo}
+                    imageIcon="email"
+                    width="95%"
+                    marginLeft={8}
+
+                  />
+                  <FloatingLabelTextInput
+                    label="Comments"
+                    value={this.state.comments1}
+                    onChangeText={this.handleCommentsChange1}
+                    resetValue={this.resetFieldComment1}
+                    imageIcon="comments"
+                    width="95%"
+                    marginLeft={8}
+                  />
+                  <View
+                    style={{
+                      marginTop: 32,
+                      flexDirection: 'row',
+                    }}>
+                    <View style={{ marginRight: 10 }}>
+                      <Image
+                        source={IconPack.GRAY_DATE}
+                        style={{ width: 25, height: 25, resizeMode: 'cover' }}
+                      />
+                    </View>
+                    <View
+                      style={{
+                        borderBottomWidth: 0.5,
+                        borderColor: '#a3a3a3',
+                        width: '88%',
+                      }}>
+                      <TouchableOpacity
+                        onPress={() => {
+                          this.showDateTimePicker();
+                        }}>
+                        <Text style={styles.textDatePickerStyle}>{!this.state.date ? 'Date' : this.state.date}</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                   
+                    {isDateTimePickerVisible && (
+                      <DateTimePicker
+                            //  mode="date"
+                        isVisible={isDateTimePickerVisible}
+                        onConfirm={(date) => this.handleDatePicked(date)}
+                        onCancel={() => hideDateTimePicker()}
+                      />
+                    )} 
+                    
+                </View>
+
+                <View style={[styles.btnView,{marginVertical:10}]}>
+                  <ActionButtonRounded
+                    title="PLACE ORDER"
+                    onButonPress={() => alert('Placeorder')}
+                    containerStyle={styles.buttonStyle}
+                  />
+                </View>
+              </ScrollView>
+            </View>
+          </TouchableWithoutFeedback>
+          {/* </View> */}
+          {/* </TouchableWithoutFeedback> */}
+        </Modal>
 
       </Container>
     );
@@ -1215,8 +1423,8 @@ const styles = StyleSheet.create({
   bottomContainer: {
     backgroundColor: '#fff',
     // borderRadius: 16,
-    borderTopLeftRadius:16,
-    borderTopRightRadius:16
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16
   },
   cartSummaryText: {
     textAlign: 'center',
@@ -1234,7 +1442,7 @@ const styles = StyleSheet.create({
   btnView: {
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom:hp(1)
+    marginBottom: hp(1)
   },
   textDatePickerStyle: {
     color: '#a3a3a3',
