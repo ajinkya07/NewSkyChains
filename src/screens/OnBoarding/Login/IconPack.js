@@ -21,7 +21,7 @@ export default {
   ORDER_HISTORY: require('../../../assets/image/Account/Custom-Order.png'),
   EXCLUSIVE: require('../../../assets/image/Account/Exclusive.png'),
   LOGOUT: require('../../../assets/image/Account/Log-out.png'),
-  //EMAIL: require('../../../assets/image/Account/Email.png'),
+  GRAY_EMAIL: require('../../../assets/image/Account/Email.png'),
   PROFILE: require('../../../assets/image/Account/Account.png'),
   ABOUT: require('../../../assets/image/Account/About.png'),
   //SOCIAL_MEDIA: require('../../../assets/image/Account/profile.png'),
@@ -39,8 +39,10 @@ export default {
   BLUE_PLUS:require('../../../assets/image/BlueIcons/Plus.png'),
   BLUE_MINUS:require('../../../assets/image/BlueIcons/Minus.png'),
   BLUE_CART:require('../../../assets/image/BlueIcons/DarkCart.png'),
-  BLUE_WISHLIST:require('../../../assets/image/BlueIcons/Heart.png')
+  BLUE_WISHLIST:require('../../../assets/image/BlueIcons/Heart.png'),
 
+BLUE_EMAIL:require('../../../assets/image/Profile/Email.png'),
+REMARK:require('../../../assets/image/BlueIcons/Remark.png')
 
 
 };

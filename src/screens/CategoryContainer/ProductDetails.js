@@ -387,7 +387,7 @@ class ProductDetails extends React.Component {
 
                     <View style={styles.remarkContainer}>
                       <Image
-                        source={IconPack.BLUE_CART}
+                        source={IconPack.REMARK}
                         style={styles.remarkIcon}
                       />
                       <TextInput
@@ -653,6 +653,7 @@ const styles = StyleSheet.create({
     height: hp(9),
   },
   remarkIcon: {
+    marginTop:hp(1.2),
     width: hp(3.5),
     height: hp(3.5),
     resizeMode: 'contain',

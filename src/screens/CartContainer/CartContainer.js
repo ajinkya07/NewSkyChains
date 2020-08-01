@@ -2,12 +2,12 @@ import React, { Component, useState } from 'react';
 import {
   View,
   Text,
-  Image,
+  Image,TouchableWithoutFeedback,
   TouchableOpacity, FlatList,
   StyleSheet, ActivityIndicator,
   Dimensions, ScrollView, SafeAreaView
 } from 'react-native';
-import { Container, Tab, Tabs, TabHeading, Icon, Toast, Fab } from 'native-base';
+import { Container, Tab, Tabs, TabHeading, Icon, Toast, Fab,Picker } from 'native-base';
 import IconPack from '@login/IconPack';
 import {
   widthPercentageToDP as wp,
@@ -24,6 +24,7 @@ import { urls } from '@api/urls'
 import Modal from 'react-native-modal';
 import { withNavigationFocus } from "@react-navigation/compat";
 import { strings } from '@values/strings';
+import FloatingLabelTextInput from '@floatingInputBox/FloatingLabelTextInput';
 
 
 
@@ -77,6 +78,54 @@ const actionButtonRoundedStyle = StyleSheet.create({
 
 
 
+
+const ActionButtonRounded2 = ({title, onButonPress, containerStyle}) => {
+  return (
+    <TouchableOpacity
+      onPress={() => {
+        onButonPress();
+      }}>
+      <View
+        style={[
+          actionButtonRoundedStyle2.mainContainerStyle2,
+          containerStyle || null,
+        ]}>
+        <View style={actionButtonRoundedStyle2.innerContainer2}>
+          <Text style={actionButtonRoundedStyle2.titleStyle2}>{title}</Text>
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+};
+
+const actionButtonRoundedStyle2 = StyleSheet.create({
+  mainContainerStyle2: {
+    backgroundColor: '#11255a',
+    height: 44,
+    width: width - 60,
+    justifyContent: 'center',
+    borderRadius: 40,
+  },
+  innerContainer2: {
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  titleStyle2: {
+    color: '#fbcb84',
+    fontSize: 14,
+    textAlign: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontWeight: '400',
+  },
+});
+
+
+
+
+
 class CartContainer extends Component {
   constructor(props) {
     super(props);
@@ -111,7 +160,15 @@ class CartContainer extends Component {
       errorClearAllCartVersion: 0,
 
       successClearAllWislistVersion: 0,
-      errorClearAllWislistVersion: 0
+      errorClearAllWislistVersion: 0,
+
+      comments: '',
+      productcode: '',
+      productName: '',
+      quantity: '',
+      length: '',
+      weight:[],
+      isModalVisible: false,
 
 
     };
@@ -616,7 +673,71 @@ class CartContainer extends Component {
     })
   }
 
+  editCartProduct = (editData) => {
+    console.warn("editData",editData);
 
+    this.setState({ isModalVisible: true,
+     productcode:editData.collection_sku_code,
+     productName:editData.collection_name,
+     quantity:editData.values[2],
+     comments:editData.values[3] !== null ? editData.values[3] : '',
+     length:editData.values[4],
+    weight:editData.weight
+     
+
+    });
+  }
+  closeEditModal = () =>{
+    this.setState({ isModalVisible: false });
+
+  }
+
+  handleProductcodeChange = newText =>
+    this.setState({
+      productcode: newText,
+    });
+  handleProductNameChange = newText =>
+    this.setState({
+      productName: newText,
+    });
+  handleQuantityChange = newText =>
+    this.setState({
+      quantity: newText,
+    });
+  handleLengthChange = newText =>
+    this.setState({
+      length: newText,
+    });
+  handleCommentsChange = newText =>
+    this.setState({
+      comments: newText,
+    });
+  resetFieldProductCode = () =>
+    this.setState({
+      productcode: '',
+    });
+  resetFieldQuantity = () =>
+    this.setState({
+      quantity: '',
+    });
+  resetFieldProductName = () =>
+    this.setState({
+      productName: '',
+    });
+  resetFieldComment = () =>
+    this.setState({
+      comments: '',
+    });
+  resetFieldLength = () =>
+    this.setState({
+      length: '',
+    });
+   
+    setSelectedValue = (value) =>{
+      this.setState({
+        weight:value
+      })
+    }
   cartView = (item) => {
     // const [isToggle, setToggleView] = useState(false);
 
@@ -691,7 +812,7 @@ class CartContainer extends Component {
                 </View>
               </View>
               <View style={styles.tabCartBottomContainer}>
-                <TouchableOpacity onPress={() => alert('edit')}>
+                <TouchableOpacity onPress={() => this.editCartProduct(item)}>
                   <View style={styles.tabCartBottomImgView}>
                     <Image style={styles.tabCartBottomImg} source={IconPack.EDIT} />
                     <Text style={styles.btnText}>EDIT</Text>
@@ -923,12 +1044,204 @@ class CartContainer extends Component {
           </TouchableOpacity>
         }
 
+
+        <Modal
+          style={{
+            justifyContent: 'flex-end',
+            marginBottom: 0,
+            marginLeft: 0,
+            marginRight: 0,
+          }}
+          isVisible={this.state.isModalVisible}
+          transparent={true}
+          onRequestClose={() => this.setState({ isModalVisible: false })}
+          onBackdropPress={() => this.setState({ isModalVisible: false })}
+          onBackButtonPress={() => this.setState({ isModalVisible: false })}
+        >
+          {/* <View style={styles.mainContainer}> */}
+          <TouchableWithoutFeedback style={{ flex: 1 }} onPress={() => null}>
+            <View style={styles.bottomContainer}>
+              <ScrollView>
+                <View
+                  style={{
+                    height: 45, flex: 1,
+                    flexDirection: 'row', justifyContent: 'space-between',
+                    alignItems: 'center', marginHorizontal: 16,
+                  }}>
+                  <Text style={{ fontSize: 18, color: '#11255a' }}>Edit Product</Text>
+                  <TouchableOpacity onPress={() => this.closeEditModal()}>
+                    <Image
+                      source={IconPack.CLOSE}
+                      style={{ width: 18, height: 18, resizeMode: 'cover' }}
+                    />
+                  </TouchableOpacity>
+                </View>
+        
+                <View
+                  style={{
+                    borderBottomColor: '#a3a3a3',
+                    borderBottomWidth: 0.5,
+                  }}></View>
+           
+           
+                <View style={{ marginHorizontal: 20, marginTop: 5 }}>
+                  <FloatingLabelTextInput
+                    label="Code"
+                    value={this.state.productcode}
+                    onChangeText={this.handleProductcodeChange}
+                    resetValue={this.resetFieldEmail}
+                    imageIcon="email"
+                    editable={false}
+                    selectTextOnFocus={false}
+                    width="95%"
+                    marginLeft={8}
+                  />
+                  <FloatingLabelTextInput
+                    label="Product Name"
+                    value={this.state.productName}
+                    onChangeText={this.handleProductNameChange}
+                    resetValue={this.resetFieldProductName}
+                    imageIcon="email"
+                    editable={false}
+                    width="95%"
+                    marginLeft={8}
+                  />
+                  <FloatingLabelTextInput
+                    label="Quantity"
+                    value={this.state.quantity}
+                    onChangeText={this.handleQuantityChange}
+                    resetValue={this.resetFieldQuantity}
+                    imageIcon="email"
+                    keyboardType="numeric"
+                    width="95%"
+                    marginLeft={8}
+                  />
+                </View>
+                <View style={{  }}>
+                  <Text style={{marginLeft: 58, fontSize: 16, color: '#a3a3a3' }}>
+                    Select Weight
+                    </Text>
+                  <Picker
+                    iosIcon={<Icon name="arrow-down" style={{ marginRight: hp(3), fontSize: 25 }} />}
+                    mode="dropdown"
+                    style={{ marginLeft: 52,height: 45, width: '70%' }}
+                    selectedValue={this.state.weight}
+                    onValueChange={(itemValue, itemIndex) => this.setSelectedValue(itemValue)}>
+                      {this.state.weight.map((w) =>(
+                    <Picker.Item label={(w).toString()} value={parseInt(w)} />
+                      ))}
+                  </Picker>
+                </View>
+
+                <View style={{ marginHorizontal: 20, marginTop: 10 }}>
+                  <FloatingLabelTextInput
+                    label="Length (inches)"
+                    value={this.state.length}
+                    onChangeText={(l)=> this.handleLengthChange(l)}
+                    resetValue={this.resetFieldLength}
+                    imageIcon="email"
+                    keyboardType="numeric"
+                    width="95%"
+                    marginLeft={8}
+
+                  />
+                  <FloatingLabelTextInput
+                    label="Comments"
+                    value={this.state.comments}
+                    onChangeText={(c)=> this.handleCommentsChange(c)}
+                    resetValue={this.resetFieldComment}
+                    imageIcon="comments"
+                    width="95%"
+                    marginLeft={8}
+                  />
+                </View>
+                <View style={styles.btnView}>
+                  <ActionButtonRounded2
+                    title="UPDATE"
+                    onButonPress={() => alert('updateProduct')}
+                    containerStyle={styles.buttonStyle}
+                  />
+                </View>
+              </ScrollView>
+            </View>
+          </TouchableWithoutFeedback>
+          {/* </View> */}
+        </Modal>
+
+
+
       </Container>
     );
   }
 }
 
 const styles = StyleSheet.create({
+  mainContainer: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  buttonStyle: {
+    marginTop: 20,
+    marginBottom: 10,
+  },
+  alertContainer: {
+    height: 100,
+    backgroundColor: '#11255a',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+  },
+  alertText: {
+    fontSize: 21,
+    color: '#fbcb84',
+  },
+  alertIcon: {
+    width: 32,
+    height: 32,
+    resizeMode: 'contain',
+  },
+  closeIcon: {
+    width: 25,
+    height: 25,
+    resizeMode: 'contain',
+  },
+  closeIconContainer: {
+    position: 'absolute',
+    top: 12,
+    right: 10,
+    bottom: 0,
+  },
+  bottomContainer: {
+    backgroundColor: '#fff',
+    // borderRadius: 16,
+    borderTopLeftRadius:16,
+    borderTopRightRadius:16
+  },
+  cartSummaryText: {
+    textAlign: 'center',
+    fontSize: 16,
+    marginTop: 20,
+  },
+  middleViewContainer: {
+    marginVertical: 20,
+  },
+  middleText: {
+    textAlign: 'center',
+    fontSize: 16,
+    color: '#A9A9A9',
+  },
+  btnView: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom:hp(1)
+  },
+  textDatePickerStyle: {
+    color: '#a3a3a3',
+    //textAlign: 'left',
+    marginTop: 5,
+    fontSize: 18,
+  },
   bottomView: {
     width: hp(5.8),
     height: hp(5.8),
