@@ -17,9 +17,9 @@ import { color } from '@values/colors';
 import HomePage from '@homepage/HomePage'
 import AccountContainer from '@accountContainer/AccountContainer'
 import CartContainer from '@cartContainer/CartContainer'
-import CustomOrder from '@customOrder/CustomOrder'
+import Customizable from '@customOrder/Customizable'
 import CategoryContainer from '@category/CategoryContainer'
-
+// import Customizable from '../../screens/Customize/Customizable'
 
 var totalDuration = 0.00
 var backPressed = 0;
@@ -100,7 +100,7 @@ class CustomOrderScreen extends React.Component {
     render() {
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <CustomOrder navigation={this.props.navigation} />
+                <Customizable navigation={this.props.navigation} />
             </View>
         );
     }

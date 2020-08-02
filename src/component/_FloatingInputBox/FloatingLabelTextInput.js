@@ -72,8 +72,7 @@ export default class FloatingLabelInput extends Component {
             }}>
             <Image
               source={
-                !isFocused ? IconPack.GRAY_PROFILE : IconPack.BLUE_PROFILE
-              }
+                !isFocused ? require('../../assets/image/Account/NAMe.png') : require('../../assets/image/BlueIcons/Account.png')}
               style={{ width: 25, height: 25, resizeMode: 'cover' }}
             />
           </View>
@@ -88,7 +87,7 @@ export default class FloatingLabelInput extends Component {
               justifyContent: 'center',
             }}>
             <Image
-              source={!isFocused ? IconPack.GRAY_EMAIL : IconPack.BLUE_EMAIL}
+              source={!isFocused ? IconPack.GRAY_EMAIL : require('../../assets/image/Profile/Email.png')}
               style={{ width: 25, height: 25, resizeMode: 'cover' }}
             />
           </View>
@@ -103,8 +102,8 @@ export default class FloatingLabelInput extends Component {
             }}>
             <Image
               source={
-                !isFocused ? IconPack.GRAY_MOBILELOGO : IconPack.BLUE_MOBILELOGO
-              }
+                !isFocused ? IconPack.GRAY_EMAIL : require('../../assets/image/Profile/mobile.png')}
+
               style={{ width: 25, height: 25, resizeMode: 'cover' }}
             />
           </View>
@@ -144,7 +143,7 @@ export default class FloatingLabelInput extends Component {
               color: '#000',
               borderBottomWidth: !isFocused ? 0.7 : 2,
               borderBottomColor: !isFocused ? '#a3a3a3' : '#11255a',
-              
+
             }}
             onFocus={this.handleFocus}
             onBlur={this.handleBlur}
@@ -156,16 +155,16 @@ export default class FloatingLabelInput extends Component {
             <TouchableOpacity
               style={{
                 position: 'absolute',
-                top: 32,
-                right: 10,
-                bottom: 0,
+                top: 30,
+                right: 12,
+                bottom: 1,
               }}
               onPress={() => this.props.resetValue()}>
               <Image
-                source={IconPack.CROSS_CLOSE}
+                source={IconPack.CLOSE_ONE}
                 style={{
-                  width: 16,
-                  height: 16,
+                  width: 14,
+                  height: 14,
                   resizeMode: 'cover',
                 }}
               />
