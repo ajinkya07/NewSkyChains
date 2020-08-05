@@ -9,6 +9,8 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import IconPack from '@login/IconPack';
+import { color } from '@values/colors';
+
 
 export default class FloatingLabelInput extends Component {
   state = {
@@ -48,7 +50,7 @@ export default class FloatingLabelInput extends Component {
       }),
       color: this.state._animatedIsFocused.interpolate({
         inputRange: [0, 1],
-        outputRange: ['#aaa', '#a3a3a3'],
+        outputRange: ['#aaa',color.brandColor,],
       }),
       fontSize: this.state._animatedIsFocused.interpolate({
         inputRange: [0, 1],

@@ -74,5 +74,8 @@ export const urls = {
         url:  url + 'Product_Cart/cart_change'
     },       
     
+    PlaceOrderFromCart:{
+        url:  url + 'Order'
+    },       
     
 }

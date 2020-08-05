@@ -39,7 +39,13 @@ import {
   EDIT_CART_PRODUCT_DATA,
   EDIT_CART_PRODUCT_DATA_SUCCESS,
   EDIT_CART_PRODUCT_DATA_ERROR,
-  EDIT_CART_PRODUCT_DATA_RESET_REDUCER
+  EDIT_CART_PRODUCT_DATA_RESET_REDUCER,
+
+  PLACE_ORDER_DATA,
+  PLACE_ORDER_DATA_SUCCESS,
+  PLACE_ORDER_DATA_ERROR,
+  PLACE_ORDER_DATA_RESET_REDUCER
+
 
 } from "@redux/types";
 import { act } from "react-test-renderer";
@@ -77,9 +83,11 @@ const initialState = {
   errorClearAllWislistVersion: 0,
 
   successEditCartProductVersion: 0,
-  errorEditCartProductVersion: 0
+  errorEditCartProductVersion: 0,
 
-
+  successPlaceOrderVersion:0,
+  errorPlaceOrderVersion:0,
+  placeOrderData:[]
 };
 
 
@@ -319,6 +327,37 @@ export default function dataReducer(state = initialState, action) {
       };
 
     case EDIT_CART_PRODUCT_DATA_RESET_REDUCER:
+      return initialState;
+
+
+
+
+      
+    case PLACE_ORDER_DATA:
+      return {
+        ...state,
+        isFetching: true
+      };
+
+    case PLACE_ORDER_DATA_SUCCESS:
+      return {
+        ...state,
+        errorMsg: action.data.msg,
+        isFetching: false,
+        successPlaceOrderVersion: ++state.successPlaceOrderVersion,
+        error: false
+      };
+
+    case PLACE_ORDER_DATA_ERROR:
+      return {
+        ...state,
+        isFetching: false,
+        error: true,
+        errorMsg: action.error,
+        errorPlaceOrderVersion: ++state.errorPlaceOrderVersion
+      };
+
+    case PLACE_ORDER_DATA_RESET_REDUCER:
       return initialState;
 
 

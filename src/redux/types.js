@@ -162,5 +162,10 @@ export const ADD_TO_CART_FROM_DETAILS_DATA_RESET_REDUCER = "addToCartFromDetails
 export const EDIT_CART_PRODUCT_DATA = "editCartProductData";
 export const EDIT_CART_PRODUCT_DATA_SUCCESS = "editCartProductDataSuccess";
 export const EDIT_CART_PRODUCT_DATA_ERROR = "editCartProductDataError";
-export const c = "editCartProductDataResetReducer";
+export const EDIT_CART_PRODUCT_DATA_RESET_REDUCER = "";
+
+export const PLACE_ORDER_DATA = "placeOrderDataData";
+export const PLACE_ORDER_DATA_SUCCESS = "placeOrderDataSuccess";
+export const PLACE_ORDER_DATA_ERROR = "placeOrderDataError";
+export const PLACE_ORDER_DATA_RESET_REDUCER = "placeOrderDataResetReducer";
 

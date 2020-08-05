@@ -37,7 +37,13 @@ import {
     EDIT_CART_PRODUCT_DATA,
     EDIT_CART_PRODUCT_DATA_SUCCESS,
     EDIT_CART_PRODUCT_DATA_ERROR,
-    EDIT_CART_PRODUCT_DATA_RESET_REDUCER
+    EDIT_CART_PRODUCT_DATA_RESET_REDUCER,
+
+    PLACE_ORDER_DATA,
+    PLACE_ORDER_DATA_SUCCESS,
+    PLACE_ORDER_DATA_ERROR,
+    PLACE_ORDER_DATA_RESET_REDUCER
+
   } from "@redux/types";
   
   import { strings } from '@values/strings'
@@ -275,6 +281,35 @@ export function updateEditedCartProduct(data) {
       .catch(function (error) {
         dispatch(
           onFailure(strings.serverFailedMsg, EDIT_CART_PRODUCT_DATA_ERROR)
+        );
+      });
+  }
+}
+
+
+
+
+export function placeOrderFromCart(data) {
+  console.warn(" placeOrderFromCart",data);
+  return dispatch => {
+    dispatch(showLoadingIndicator(PLACE_ORDER_DATA));
+
+    axios.post(urls.PlaceOrderFromCart.url, data, header).then(response => {
+      console.warn("response placeOrderFromCart",response.data);
+      if (response.data.ack === '1') {
+        dispatch(
+          onSuccess(response.data, PLACE_ORDER_DATA_SUCCESS)
+        )
+      }
+      else {
+        dispatch(
+          onFailure(response.data.msg, PLACE_ORDER_DATA_ERROR)
+        )
+      }
+    })
+      .catch(function (error) {
+        dispatch(
+          onFailure(strings.serverFailedMsg, PLACE_ORDER_DATA_ERROR)
         );
       });
   }

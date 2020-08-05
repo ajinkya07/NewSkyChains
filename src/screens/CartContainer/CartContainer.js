@@ -5,7 +5,7 @@ import {
   Image, TouchableWithoutFeedback,
   TouchableOpacity, FlatList,
   StyleSheet, ActivityIndicator,
-  Dimensions, ScrollView, SafeAreaView
+  Dimensions, ScrollView, SafeAreaView, Platform
 } from 'react-native';
 import { Container, Tab, Tabs, TabHeading, Icon, Toast, Fab, Picker } from 'native-base';
 import IconPack from '@login/IconPack';
@@ -18,7 +18,7 @@ import { color } from '@values/colors';
 import {
   getCartData, getWishlistData, deleteCartWishListProduct,
   getTotalCartCount, moveProduct, clearAllCart, clearAllWishList,
-  updateEditedCartProduct
+  updateEditedCartProduct, placeOrderFromCart
 } from '@cartContainer/CartContainerAction';
 import { connect } from 'react-redux';
 import { urls } from '@api/urls'
@@ -187,7 +187,11 @@ class CartContainer extends Component {
 
       successEditCartProductVersion: 0,
       errorEditCartProductVersion: 0,
-      editStateData: ''
+      editStateData: '',
+      
+    successPlaceOrderVersion:0,
+    errorPlaceOrderVersion:0,
+  
     };
     userId = global.userId;
 
@@ -217,7 +221,8 @@ class CartContainer extends Component {
       successMoveProductVersion, errorMoveProductVersion,
       successClearAllCartVersion, errorClearAllCartVersion,
       successClearAllWislistVersion, errorClearAllWislistVersion,
-      successEditCartProductVersion, errorEditCartProductVersion
+      successEditCartProductVersion, errorEditCartProductVersion,
+    successPlaceOrderVersion,errorPlaceOrderVersion
     } = nextProps;
 
     let newState = null;
@@ -331,8 +336,24 @@ class CartContainer extends Component {
     }
 
 
+    if (successPlaceOrderVersion > prevState.successPlaceOrderVersion) {
+      newState = {
+        ...newState,
+        successPlaceOrderVersion: nextProps.successPlaceOrderVersion,
+      };
+    }
+    if (errorPlaceOrderVersion > prevState.errorPlaceOrderVersion) {
+      newState = {
+        ...newState,
+        errorPlaceOrderVersion: nextProps.errorPlaceOrderVersion,
+      };
+    }
+
     return newState;
   }
+
+
+
 
   async componentDidUpdate(prevProps, prevState) {
     const { cartData, wishlistData, totalCartCountData } = this.props;
@@ -497,6 +518,23 @@ class CartContainer extends Component {
     }
 
     if (this.state.errorEditCartProductVersion > prevState.errorEditCartProductVersion) {
+      Toast.show({
+        text: this.props.errorMsg ? this.props.errorMsg : strings.serverFailedMsg,
+        duration: 2500,
+        type: 'danger'
+      })
+    }
+
+
+    if (this.state.successPlaceOrderVersion > prevState.successPlaceOrderVersion) {
+      Toast.show({
+        text: this.props.errorMsg ? this.props.errorMsg : strings.serverFailedMsg,
+        duration: 2500,
+        type:'success'
+      })
+    }
+
+    if (this.state.errorPlaceOrderVersion > prevState.errorPlaceOrderVersion) {
       Toast.show({
         text: this.props.errorMsg ? this.props.errorMsg : strings.serverFailedMsg,
         duration: 2500,
@@ -1088,13 +1126,26 @@ class CartContainer extends Component {
 
     await this.props.updateEditedCartProduct(edit)
 
-    // this.setState({
-    //   isModalVisible:false,editStateData:''
-    // })
   }
 
 
+  placeOrderFromCart = () =>{
 
+    const{comments1, date} = this.state
+
+    const orderData = new FormData();
+
+    orderData.append('user_id', userId);
+    orderData.append('full_name', 'ajinkya p');
+    orderData.append('email_id', 'ajinkyapalv@gmail.com');
+    orderData.append('mobile_number', '8446116325');
+    orderData.append('delivery_date', date);
+    orderData.append('device_type', Platform.OS === 'ios' ? 'ios' : 'android');
+    orderData.append('remarks', comments1);
+
+
+    this.props.placeOrderFromCart(orderData)
+  }
 
 
 
@@ -1452,7 +1503,6 @@ class CartContainer extends Component {
 
                   {isDateTimePickerVisible && (
                     <DateTimePicker
-                      //  mode="date"
                       isVisible={isDateTimePickerVisible}
                       onConfirm={(date) => this.handleDatePicked(date)}
                       onCancel={() => hideDateTimePicker()}
@@ -1464,7 +1514,7 @@ class CartContainer extends Component {
                 <View style={[styles.btnView, { marginVertical: 15 }]}>
                   <ActionButtonRounded
                     title="PLACE ORDER"
-                    onButonPress={() => alert('Placeorder')}
+                    onButonPress={() => this.placeOrderFromCart()}
                     containerStyle={styles.buttonStyle}
                   />
                 </View>
@@ -1963,11 +2013,15 @@ function mapStateToProps(state) {
     successEditCartProductVersion: state.cartContainerReducer.successEditCartProductVersion,
     errorEditCartProductVersion: state.cartContainerReducer.errorEditCartProductVersion,
 
+    successPlaceOrderVersion: state.cartContainerReducer.successPlaceOrderVersion,
+    errorPlaceOrderVersion: state.cartContainerReducer.errorPlaceOrderVersion,
+
+
   };
 }
 
 export default connect(mapStateToProps, {
   getCartData, getWishlistData,
   deleteCartWishListProduct, getTotalCartCount, moveProduct,
-  clearAllCart, clearAllWishList, updateEditedCartProduct
+  clearAllCart, clearAllWishList, updateEditedCartProduct,placeOrderFromCart
 })(withNavigationFocus(CartContainer));
