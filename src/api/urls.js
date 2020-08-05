@@ -25,6 +25,10 @@ export const urls = {
     ProductGrid:{
         url: url + "Products_Grid"
     },
+    
+    AddToCartFromDetails:{
+        url: url + "Product_Cart/add_to_cart"
+    },
     TotalCartCount:{
         url: url + 'Product_Cart/cart_value_count'
     },
@@ -65,6 +69,10 @@ export const urls = {
     ClearCartWishlistData:{
         url:  url + 'Product_Cart/clear_cart_data'
     },       
-
-
+    
+    EditCartProduct:{
+        url:  url + 'Product_Cart/cart_change'
+    },       
+    
+    
 }

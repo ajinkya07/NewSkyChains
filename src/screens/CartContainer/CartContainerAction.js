@@ -34,7 +34,10 @@ import {
     CLEAR_ALL_WISHLIST_DATA_ERROR,
     CLEAR_ALL_WISHLIST_DATA_RESET_REDUCER,
 
-  
+    EDIT_CART_PRODUCT_DATA,
+    EDIT_CART_PRODUCT_DATA_SUCCESS,
+    EDIT_CART_PRODUCT_DATA_ERROR,
+    EDIT_CART_PRODUCT_DATA_RESET_REDUCER
   } from "@redux/types";
   
   import { strings } from '@values/strings'
@@ -246,6 +249,32 @@ export function clearAllWishList(data) {
       .catch(function (error) {
         dispatch(
           onFailure(strings.serverFailedMsg, CLEAR_ALL_WISHLIST_DATA_ERROR)
+        );
+      });
+  }
+}
+
+export function updateEditedCartProduct(data) {
+  console.warn(" updateEditedCartProduct",data);
+  return dispatch => {
+    dispatch(showLoadingIndicator(EDIT_CART_PRODUCT_DATA));
+
+    axios.post(urls.EditCartProduct.url, data, header).then(response => {
+      console.warn("response updateEditedCartProduct",response.data);
+      if (response.data.ack === '1') {
+        dispatch(
+          onSuccess(response.data, EDIT_CART_PRODUCT_DATA_SUCCESS)
+        )
+      }
+      else {
+        dispatch(
+          onFailure(response.data.msg, EDIT_CART_PRODUCT_DATA_ERROR)
+        )
+      }
+    })
+      .catch(function (error) {
+        dispatch(
+          onFailure(strings.serverFailedMsg, EDIT_CART_PRODUCT_DATA_ERROR)
         );
       });
   }

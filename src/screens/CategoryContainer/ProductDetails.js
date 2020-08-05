@@ -22,13 +22,15 @@ import {
 } from 'react-native-responsive-screen';
 import _Text from '@text/_Text'
 import { color } from '@values/colors';
-import { getProductDetails } from "@category/ProductDetailsAction";
+import { getProductDetails, addToCartFromDetails } from "@category/ProductDetailsAction";
 import { urls } from '@api/urls'
 import { strings } from '@values/strings'
 import Swiper from 'react-native-swiper'
 import Modal from 'react-native-modal';
 import FastImage from 'react-native-fast-image';
 import _CustomHeader from '@customHeader/_CustomHeader'
+import { parseInt } from 'lodash';
+import { getTotalCartCount } from '@homepage/HomePageAction';
 
 
 
@@ -57,31 +59,6 @@ const PickerDropDown = () => {
 };
 
 
-const PickerWeightDropDown = (props) => {
-  const [selectedValue, setSelectedValue] = useState(props.weight);
-  return (
-    <View >
-      {/* <Picker
-        selectedValue={selectedValue}
-        style={{ height: 50, width: 200 }}
-        onValueChange={(itemValue, itemIndex) => setSelectedValue(itemValue)}>
-        <Picker.Item label={props.weight} value={props.weight} />
-      </Picker> */}
-
-      <Picker
-        iosIcon={<Icon name="arrow-down" style={{ marginRight: hp(4), fontSize: 22 }} />}
-        mode="dropdown"
-        style={{ height: 50, width: wp(55) }}
-        selectedValue={selectedValue}
-        onValueChange={(itemValue, itemIndex) => setSelectedValue(itemValue)}>
-        <Picker.Item label={(props.weight).toString()} value={parseInt(props.weight)} />
-      </Picker>
-    </View>
-  );
-};
-
-
-
 
 
 
@@ -106,7 +83,10 @@ class ProductDetails extends React.Component {
       productItem: productItem,
       successProductDetailsVersion: 0,
       errorProductDetailsVersion: 0,
-      currentPage: 0
+      currentPage: 0,
+
+      successAddCartDetailsVersion:0,
+      errorAddCartDetailsVersion:0
 
     };
     userId = global.userId;
@@ -128,7 +108,9 @@ class ProductDetails extends React.Component {
 
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    const { successProductDetailsVersion, errorProductDetailsVersion } = nextProps;
+    const { successProductDetailsVersion, errorProductDetailsVersion,
+      successAddCartDetailsVersion, errorAddCartDetailsVersion
+    } = nextProps;
     let newState = null;
 
     if (successProductDetailsVersion > prevState.successProductDetailsVersion) {
@@ -143,11 +125,25 @@ class ProductDetails extends React.Component {
         errorProductDetailsVersion: nextProps.errorProductDetailsVersion,
       };
     }
+
+    
+    if (successAddCartDetailsVersion > prevState.successAddCartDetailsVersion) {
+      newState = {
+        ...newState,
+        successAddCartDetailsVersion: nextProps.successAddCartDetailsVersion,
+      };
+    }
+    if (errorAddCartDetailsVersion > prevState.errorAddCartDetailsVersion) {
+      newState = {
+        ...newState,
+        errorAddCartDetailsVersion: nextProps.errorAddCartDetailsVersion,
+      };
+    }
     return newState;
   }
 
   async componentDidUpdate(prevProps, prevState) {
-    const { productDetailsData } = this.props;
+    const { productDetailsData, addCartDetailsData } = this.props;
 
     if (this.state.successProductDetailsVersion > prevState.successProductDetailsVersion) {
       if (productDetailsData.ack == '1') {
@@ -165,6 +161,25 @@ class ProductDetails extends React.Component {
       }
     }
     if (this.state.errorProductDetailsVersion > prevState.errorProductDetailsVersion) {
+      this.showToast(this.props.errorMsg, 'danger');
+
+      const countData = new FormData();
+      countData.append('user_id', userId);
+      countData.append('table', 'cart');
+
+      await this.props.getTotalCartCount(countData)
+
+    }
+
+
+    
+    if (this.state.successAddCartDetailsVersion > prevState.successAddCartDetailsVersion) {
+      console.warn("addCartDetailsData",addCartDetailsData);
+      if (addCartDetailsData.ack == '1') {
+        this.showToast(this.props.errorMsg, );       
+    }
+  }
+    if (this.state.errorAddCartDetailsVersion > prevState.errorAddCartDetailsVersion) {
       this.showToast(this.props.errorMsg, 'danger');
     }
   }
@@ -286,6 +301,92 @@ class ProductDetails extends React.Component {
     );
 };
 
+
+setSelectedValue = (w) =>{
+  this.setState({
+    weight:w
+  })
+}
+
+ PickerWeightDropDown = (weight) => {
+  return (
+    <View >
+
+      <Picker
+        iosIcon={<Icon name="arrow-down" style={{ marginRight: hp(4), fontSize: 22 }} />}
+        mode="dropdown"
+        style={{ height: 50, width: wp(55) }}
+        selectedValue={weight}
+        onValueChange={(itemValue, itemIndex) => setSelectedValue(itemValue)}>
+        <Picker.Item label={(weight).toString()} value={parseInt(weight)} />
+      </Picker>
+    </View>
+  );
+};
+
+
+
+addtoCart = (d) =>{
+
+  const {length,count, remark, weight} = this.state
+  
+  // console.warn("data" , count, typeof count);
+
+  const addCartData = new FormData();
+  
+  addCartData.append('Add_To_Cart', [
+    {'user_id':userId, 
+    "table":'cart', 
+    'product_id':d.product_master_id,
+    'product_inventory_table':"product_master",
+    'gross_wt':d.key_value[0],
+    'net_wt':d.key_value[1],
+    'melting_id':d.default_melting_id,
+    'no_quantity':count,
+    'device_type':Platform.OS === 'ios' ? 'ios': 'android',
+    'remarks':remark,
+    'size':d.key_value[2],
+    'weight':parseInt(weight),
+    'length':length
+
+    }]);
+
+
+  this.props.addToCartFromDetails(addCartData)
+
+}
+
+
+addToWishList = (d) =>{
+
+  const {length,count, remark, weight} = this.state
+  
+  // console.warn("data" , count, typeof count);
+
+  const addWishData = new FormData();
+  
+  addWishData.append('Add_To_Cart', [
+    {'user_id':userId, 
+    "table":'wishlist', 
+    'product_id':d.product_master_id,
+    'product_inventory_table':"product_master",
+    'gross_wt':d.key_value[0],
+    'net_wt':d.key_value[1],
+    'melting_id':d.default_melting_id,
+    'no_quantity':count,
+    'device_type':Platform.OS === 'ios' ? 'ios': 'android',
+    'remarks':remark,
+    'size':d.key_value[2],
+    'weight':parseInt(weight),
+    'length':length
+
+    }]);
+
+
+  this.props.addToCartFromDetails(addWishData)
+  }
+
+
   render() {
     const headerOpacity = this.scrollY.interpolate({
       inputRange: [0, 282, 283],
@@ -294,6 +395,8 @@ class ProductDetails extends React.Component {
     });
 
     const { productDetailsStateData,weight } = this.state
+
+    console.warn("productDetailsStateData",productDetailsStateData);
 
     let url = urls.imageUrl + (productDetailsStateData !== undefined && productDetailsStateData.zoom_image)
 
@@ -342,18 +445,21 @@ class ProductDetails extends React.Component {
 
                   <View style={styles.mainContainerStyle}>
                     <View style={styles.topTitleContainer}>
-                      <View style={{ width: wp(78) }}>
+                      <View style={{ width: wp(83) }}>
                         <Text style={{ fontSize: 19, color: color.brandColor }}>{productDetailsStateData.product_name}</Text>
                       </View>
                       <View style={{ justifyContent: 'flex-end', flexDirection: 'row' }}>
-                        <Image
-                          source={IconPack.BLUE_WISHLIST}
-                          style={styles.ImageStyle}
-                        />
-                        <Image
-                          source={IconPack.BLUE_CART}
-                          style={styles.ImageStyle}
-                        />
+                        {productDetailsStateData.in_wishlist > 0 &&
+                          <Image
+                            source={IconPack.BLUE_WISHLIST}
+                            style={styles.ImageStyle}
+                          />}
+                        {productDetailsStateData.in_cart > 0 &&
+                          <Image
+                            source={IconPack.BLUE_CART}
+                            style={styles.ImageStyle}
+                          />
+                        }
                       </View>
                     </View>
 
@@ -472,7 +578,8 @@ class ProductDetails extends React.Component {
                           <Text style={{ fontSize: 16, color: 'gray' }}>Weight</Text>
                         </View>
                         <View>
-                          <PickerWeightDropDown weight={ weight} />
+                         { this.PickerWeightDropDown(weight)}
+                          {/* <PickerWeightDropDown weight={ weight} /> */}
                         </View>
                       </View>
 
@@ -525,7 +632,7 @@ class ProductDetails extends React.Component {
                           }}>
                           <Text
                             style={{ textAlign: 'center', color: '#fbcb84', fontWeight: '400' }}
-                            onPress={() => Alert.alert('cart')}>
+                            onPress={() => this.addtoCart(productDetailsStateData)}>
                             ADD TO CART
                       </Text>
                         </View>
@@ -537,7 +644,7 @@ class ProductDetails extends React.Component {
                           }}>
                           <Text
                             style={{ textAlign: 'center', color: '#fbcb84', fontWeight: '400' }}
-                            onPress={() => Alert.alert('wishlist')}>
+                            onPress={() => this.addToWishList(productDetailsStateData)}>
                             WISHLIST
                       </Text>
                         </View>
@@ -735,7 +842,13 @@ function mapStateToProps(state) {
     errorProductDetailsVersion: state.productDetailsReducer.errorProductDetailsVersion,
     productDetailsData: state.productDetailsReducer.productDetailsData,
 
+    successAddCartDetailsVersion: state.productDetailsReducer.successAddCartDetailsVersion,
+    errorAddCartDetailsVersion: state.productDetailsReducer.errorAddCartDetailsVersion,
+    addCartDetailsData: state.productDetailsReducer.addCartDetailsData,
+
   }
 }
 
-export default connect(mapStateToProps, { getProductDetails })(ProductDetails)
+export default connect(mapStateToProps, { getProductDetails, addToCartFromDetails,
+  getTotalCartCount
+})(ProductDetails)

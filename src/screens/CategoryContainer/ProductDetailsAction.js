@@ -4,6 +4,11 @@ import {
   PRODUCT_DETAILS_DATA_ERROR,
   PRODUCT_DETAILS_DATA_RESET_REDUCER,
 
+  ADD_TO_CART_FROM_DETAILS_DATA,
+  ADD_TO_CART_FROM_DETAILS_DATA_SUCCESS,
+  ADD_TO_CART_FROM_DETAILS_DATA_ERROR,
+  ADD_TO_CART_FROM_DETAILS_DATA_RESET_REDUCER,
+
 } from "@redux/types";
 
 import { strings } from '@values/strings'
@@ -39,13 +44,11 @@ export function onFailure(error, type) {
 }
 
 export function getProductDetails(data) {
-console.log("getProductDetails data",data);
 
   return dispatch => {
     dispatch(showLoadingIndicator(PRODUCT_DETAILS_DATA));
 
     axios.post(urls.ProductDetails.url, data, header).then(response => {
-        console.log("getProductDetails", response.data);
         if (response.data.ack ==='1') {
           dispatch(
             onSuccess(response.data, PRODUCT_DETAILS_DATA_SUCCESS)
@@ -58,8 +61,6 @@ console.log("getProductDetails data",data);
         }
       })
       .catch(function (error) {
-        console.log("getProductDetails", error);
-
         dispatch(
           onFailure(strings.serverFailedMsg, PRODUCT_DETAILS_DATA_ERROR)
         );
@@ -68,30 +69,32 @@ console.log("getProductDetails data",data);
 }
 
 
-// export function afterOtpRequest(data) {
-//   console.log("SendOtp data",data);
   
-//     return dispatch => {
-//       dispatch(showLoadingIndicator(OTP_DATA));
-//       axios.post(urls.ChangePassword.url, data, header).then(response => {
-//           console.log("afterOtpRequest", response.data);
-//           if (response.data.ack ==='1') {
-//             dispatch(
-//               onSuccess(response.data, OTP_DATA_SUCCESS)
-//             )
-//           }
-//           else {
-//             dispatch(
-//               onFailure(response.data.msg, OTP_DATA_ERROR)
-//             )
-//           }
-//         })
-//         .catch(function (error) {
-//           console.log("AFTER OTP WITH MOB AND PASS ERROR ", error);
-//           dispatch(
-//             onFailure(strings.serverFailedMsg, OTP_DATA_ERROR)
-//           );
-//         });
-//     }
-//   }
-  
+
+export function addToCartFromDetails(data) {
+  console.warn("data--",data);
+
+  return dispatch => {
+    dispatch(showLoadingIndicator(ADD_TO_CART_FROM_DETAILS_DATA));
+
+    axios.post(urls.AddToCartFromDetails.url, data, header).then(response => {
+      console.warn("response--",response.data);
+        if (response.data.ack ==='1') {
+          dispatch(
+            onSuccess(response.data, ADD_TO_CART_FROM_DETAILS_DATA_SUCCESS)
+          )
+        }
+        else {
+          dispatch(
+            onFailure(response.data.msg, ADD_TO_CART_FROM_DETAILS_DATA_ERROR)
+          )
+        }
+      })
+      .catch(function (error) {
+        console.warn("error00--",error);
+        dispatch(
+          onFailure(strings.serverFailedMsg, ADD_TO_CART_FROM_DETAILS_DATA_ERROR)
+        );
+      });
+  }
+}

@@ -17,7 +17,8 @@ import _Text from '@text/_Text'
 import { color } from '@values/colors';
 import {
   getCartData, getWishlistData, deleteCartWishListProduct,
-  getTotalCartCount, moveProduct, clearAllCart, clearAllWishList
+  getTotalCartCount, moveProduct, clearAllCart, clearAllWishList,
+  updateEditedCartProduct
 } from '@cartContainer/CartContainerAction';
 import { connect } from 'react-redux';
 import { urls } from '@api/urls'
@@ -27,6 +28,7 @@ import { strings } from '@values/strings';
 import FloatingLabelTextInput from '@floatingInputBox/FloatingLabelTextInput';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import moment from 'moment'
+import { FAB } from 'react-native-paper';
 
 
 var userId = ''
@@ -171,11 +173,11 @@ class CartContainer extends Component {
       length: '',
       weight: [],
       isModalVisible: false,
-      date:'',
-      isPlaceOrderModalVisible:false,
-      isContinueModalVisible:false,
-      isDeleteCartVisible:false,
-      isCartWeightSummeryVisible:false,
+      date: '',
+      isPlaceOrderModalVisible: false,
+      isContinueModalVisible: false,
+      isDeleteCartVisible: false,
+      isCartWeightSummeryVisible: false,
       name: '',
       mobileNo: '1980110078',
       comments1: '',
@@ -183,6 +185,9 @@ class CartContainer extends Component {
       email: 'John@mailinator.com',
       isDateTimePickerVisible: false,
 
+      successEditCartProductVersion: 0,
+      errorEditCartProductVersion: 0,
+      editStateData: ''
     };
     userId = global.userId;
 
@@ -211,7 +216,8 @@ class CartContainer extends Component {
       successTotalCartCountVersion, errorTotalCartCountVersion,
       successMoveProductVersion, errorMoveProductVersion,
       successClearAllCartVersion, errorClearAllCartVersion,
-      successClearAllWislistVersion, errorClearAllWislistVersion
+      successClearAllWislistVersion, errorClearAllWislistVersion,
+      successEditCartProductVersion, errorEditCartProductVersion
     } = nextProps;
 
     let newState = null;
@@ -308,6 +314,22 @@ class CartContainer extends Component {
         errorClearAllWislistVersion: nextProps.errorClearAllWislistVersion,
       };
     }
+
+
+
+    if (successEditCartProductVersion > prevState.successEditCartProductVersion) {
+      newState = {
+        ...newState,
+        successEditCartProductVersion: nextProps.successEditCartProductVersion,
+      };
+    }
+    if (errorEditCartProductVersion > prevState.errorEditCartProductVersion) {
+      newState = {
+        ...newState,
+        errorEditCartProductVersion: nextProps.errorEditCartProductVersion,
+      };
+    }
+
 
     return newState;
   }
@@ -458,6 +480,30 @@ class CartContainer extends Component {
     }
 
 
+    if (this.state.successEditCartProductVersion > prevState.successEditCartProductVersion) {
+      Toast.show({
+        text: this.props.errorMsg ? this.props.errorMsg : strings.serverFailedMsg,
+        duration: 2500,
+      })
+
+      const a = new FormData();
+      a.append('user_id', userId);
+      a.append('table', 'cart');
+
+      await this.props.getCartData(a)
+
+      this.setState({ editStateData: '', isModalVisible: false })
+
+    }
+
+    if (this.state.errorEditCartProductVersion > prevState.errorEditCartProductVersion) {
+      Toast.show({
+        text: this.props.errorMsg ? this.props.errorMsg : strings.serverFailedMsg,
+        duration: 2500,
+        type: 'danger'
+      })
+    }
+
 
   }
 
@@ -585,8 +631,8 @@ class CartContainer extends Component {
                   <Text style={styles.text}>{data.values[2]}</Text>
                 </View>
                 <View style={styles.cartDetail}>
-                  <Text style={styles.textColor}>remarks:</Text>
-                  <Text style={styles.text}>{data.values[3]}</Text>
+                  <Text style={styles.textColor}>remarks: </Text>
+                  <Text style={styles.text}> {data.values[3]}</Text>
                 </View>
                 <View style={styles.cartDetail}>
                   <Text style={styles.textColor}>length:</Text>
@@ -695,8 +741,8 @@ class CartContainer extends Component {
       quantity: editData.values[2],
       comments: editData.values[3] !== null ? editData.values[3] : '',
       length: editData.values[4],
-      weight: editData.weight
-
+      weight: editData.weight,
+      editStateData: editData
 
     });
   }
@@ -705,71 +751,70 @@ class CartContainer extends Component {
 
   }
 
-  handleProductcodeChange = newText =>{
+  handleProductcodeChange = newText => {
     this.setState({
       productcode: newText,
     });
   }
-  handleProductNameChange = newText =>{
+  handleProductNameChange = newText => {
     this.setState({
       productName: newText,
     });
   }
-  handleQuantityChange = newText =>{
+  handleQuantityChange = newText => {
     this.setState({
       quantity: newText,
     });
   }
-  handleLengthChange = newText =>{
+  handleLengthChange = newText => {
     this.setState({
       length: newText,
     });
   }
-  handleCommentsChange = newText =>{
+  handleCommentsChange = newText => {
     this.setState({
       comments: newText,
     });
   }
-  resetFieldProductCode = () =>{
+  resetFieldProductCode = () => {
     this.setState({
       productcode: '',
     });
   }
-  resetFieldQuantity = () =>{
+  resetFieldQuantity = () => {
     console.warn("reset q");
     this.setState({
       quantity: '',
     });
   }
-  resetFieldProductName = () =>{
+  resetFieldProductName = () => {
     this.setState({
       productName: '',
     });
   }
-  resetFieldComment = () =>{
+  resetFieldComment = () => {
     // this.setState({
     //   comments: '',
     // });
     this.handleCommentsChange('')
   }
 
-  resetFieldLength = () =>{
+  resetFieldLength = () => {
     this.setState({
       length: '',
-    });}
+    });
+  }
 
   setSelectedValue = (value) => {
     this.setState({
       weight: value
     })
   }
-  cartView = (item) => {
-    // const [isToggle, setToggleView] = useState(false);
 
-    // const setToggleValue = isToggle => {
-    //   isToggle = !isToggle;
-    //   setToggleView(isToggle);
-    // };
+  // cart view 
+
+  cartView = (item) => {
+
     const { isToogleTwo, openMoreDetailsIdCart } = this.state
 
     let baseurl2 = urls.imageUrl + item.zoom_image
@@ -823,8 +868,8 @@ class CartContainer extends Component {
                   <Text style={styles.textColor}>quantity:</Text>
                   <Text style={styles.text}>{item.values[2]}</Text>
                 </View>
-                <View style={styles.cartDetail}>
-                  <Text style={styles.textColor}>remarks:</Text>
+                <View style={styles.cartDetail }>
+                  <Text style={styles.textColor}>remarks: </Text>
                   <Text style={styles.text}>{item.values[3]}</Text>
                 </View>
                 <View style={styles.cartDetail}>
@@ -869,75 +914,70 @@ class CartContainer extends Component {
     );
   };
 
-//FOR PLACE ORDER MODAL 
+  //FOR PLACE ORDER MODAL 
 
-showDateTimePicker = () => {
-  this.setState({
-    isDateTimePickerVisible: true,
-  });
-};
+  showDateTimePicker = () => {
+    this.setState({
+      isDateTimePickerVisible: true,
+    });
+  };
 
-hideDateTimePicker = () => {
-  this.setState({
-    isDateTimePickerVisible: false,
-  });
-};
-handleDatePicked(date) {
-  console.warn('A date has been picked: ', date);
+  hideDateTimePicker = () => {
+    this.setState({
+      isDateTimePickerVisible: false,
+    });
+  };
+  handleDatePicked(date) {
 
-  let d = moment(new Date(date).toISOString().slice(0, 10)).format('DD-MM-YYYY')
-  console.warn("d---",d);
+    let d = moment(new Date(date).toISOString().slice(0, 10)).format('DD-MM-YYYY')
+    console.warn("d---", d);
 
-  this.setState({
-    date:d,
-    isDateTimePickerVisible: false,
+    this.setState({
+      date: d,
+      isDateTimePickerVisible: false,
 
-  })
-}
+    })
+  }
 
-handleNameChange = newText =>
-  this.setState({
-    name: newText,
-  });
+  handleNameChange = newText =>
+    this.setState({
+      name: newText,
+    });
 
-handleEmailChange = newText =>
-  this.setState({
-    email: newText,
-  });
-handleMobileChange = newText =>
-  this.setState({
-    mobileNo: newText,
-  });
-handleCommentsChange1 = newText =>
-  this.setState({
-    comments1: newText,
-  });
+  handleEmailChange = newText =>
+    this.setState({
+      email: newText,
+    });
+  handleMobileChange = newText =>
+    this.setState({
+      mobileNo: newText,
+    });
+  handleCommentsChange1 = newText =>
+    this.setState({
+      comments1: newText,
+    });
 
-resetFieldEmail = () =>
-  this.setState({
-    email: '',
-  });
-  
-resetFieldEmail1 = () =>
-this.setState({
-  email: '',
-});
-resetFieldName = () =>
-  this.setState({
-    name: '',
-  });
-resetFieldMobileNo = () =>
-  this.setState({
-    mobileNo: '',
-  });
-resetFieldComment1 = () =>
-  this.setState({
-    comments: '',
-  });
+  resetFieldEmail = () =>
+    this.setState({
+      email: '',
+    });
 
-
-
-
+  resetFieldEmail1 = () =>
+    this.setState({
+      email: '',
+    });
+  resetFieldName = () =>
+    this.setState({
+      name: '',
+    });
+  resetFieldMobileNo = () =>
+    this.setState({
+      mobileNo: '',
+    });
+  resetFieldComment1 = () =>
+    this.setState({
+      comments: '',
+    });
 
 
   CartDetails = (cartData) => {
@@ -976,8 +1016,8 @@ resetFieldComment1 = () =>
     })
   }
 
-  openDeleteAllCartModal = () =>[
-    this.setState({isDeleteCartVisible:true})
+  openDeleteAllCartModal = () => [
+    this.setState({ isDeleteCartVisible: true })
   ]
 
   deleteAllProduct = () => {
@@ -990,11 +1030,11 @@ resetFieldComment1 = () =>
 
     if (currentPage == 0) {
       this.props.clearAllCart(deleteData)
-      this.setState({isDeleteCartVisible:false})
+      this.setState({ isDeleteCartVisible: false })
     }
     else if (currentPage == 1) {
       this.props.clearAllWishList(deleteData)
-      this.setState({isDeleteCartVisible:false})
+      this.setState({ isDeleteCartVisible: false })
 
     }
 
@@ -1003,34 +1043,67 @@ resetFieldComment1 = () =>
   placeOrderView = () => {
     this.setState({
       isPlaceOrderModalVisible: true,
-      isContinueModalVisible:false
+      isContinueModalVisible: false
 
     })
   }
 
-  
-  placeOrderContinue= () => {
+
+  placeOrderContinue = () => {
     this.setState({
-      isContinueModalVisible:true
+      isContinueModalVisible: true
     })
   }
 
   closePlaceOrder = () => {
-  
+
     this.setState({
       isPlaceOrderModalVisible: false
     })
   }
 
-  closeSummeryModal = () =>{
+  closeSummeryModal = () => {
     this.setState({
-      isCartWeightSummeryVisible:false
+      isCartWeightSummeryVisible: false
     })
   }
 
+
+  updateCartProduct = async () => {
+    const { editStateData, quantity, weight, comments, length } = this.state
+
+    console.warn("editStateData", editStateData.cart_wish_id);
+    console.warn("comments", comments);
+
+
+    const edit = new FormData();
+
+    edit.append('table', 'cart');
+    edit.append('user_id', userId);
+    edit.append('cart_wish_id', editStateData.cart_wish_id);
+    edit.append('weight', parseInt(weight));
+    edit.append('quantity', quantity);
+    edit.append('remarks', comments);
+    edit.append('length', length);
+
+    await this.props.updateEditedCartProduct(edit)
+
+    // this.setState({
+    //   isModalVisible:false,editStateData:''
+    // })
+  }
+
+
+
+
+
+
+
+
+
   render() {
     const { cartData, wishlistData, isFetching } = this.props
-    const { wishStateData, cartStateData, isCartImageModalVisibel, 
+    const { wishStateData, cartStateData, isCartImageModalVisibel,
       isDateTimePickerVisible,
       imageToBeDisplayed } = this.state
 
@@ -1086,7 +1159,7 @@ resetFieldComment1 = () =>
             }}>
             <ActionButtonRounded
               title="CART WEIGHT"
-              onButonPress={() => this.setState({isCartWeightSummeryVisible:true})}
+              onButonPress={() => this.setState({ isCartWeightSummeryVisible: true })}
               containerStyle={styles.buttonStyle}
             />
             <ActionButtonRounded
@@ -1156,7 +1229,7 @@ resetFieldComment1 = () =>
           </TouchableOpacity>
         }
 
-{/* EDIT PRODUCT */}
+        {/* EDIT PRODUCT */}
         <Modal
           style={{
             justifyContent: 'flex-end',
@@ -1172,7 +1245,7 @@ resetFieldComment1 = () =>
         >
           {/* <View style={styles.mainContainer}> */}
           <TouchableWithoutFeedback style={{ flex: 1 }} onPress={() => null}>
-            <View style={[styles.bottomContainer,{     borderBottomLeftRadius: 0,borderBottomRightRadius: 0}]}>
+            <View style={[styles.bottomContainer, { borderBottomLeftRadius: 0, borderBottomRightRadius: 0 }]}>
               <ScrollView>
                 <View
                   style={{
@@ -1221,8 +1294,8 @@ resetFieldComment1 = () =>
                   <FloatingLabelTextInput
                     label="Quantity"
                     value={this.state.quantity}
-                    onChangeText={(q)=>this.handleQuantityChange(q)}
-                    resetValue={()=>this.resetFieldQuantity()}
+                    onChangeText={(q) => this.handleQuantityChange(q)}
+                    resetValue={() => this.resetFieldQuantity()}
                     imageIcon="email"
                     keyboardType="numeric"
                     width="95%"
@@ -1268,11 +1341,14 @@ resetFieldComment1 = () =>
                   />
                 </View>
                 <View style={styles.btnView}>
-                  <ActionButtonRounded2
-                    title="UPDATE"
-                    onButonPress={() => alert('updateProduct')}
-                    containerStyle={styles.buttonStyle}
-                  />
+                  {!this.props.isFetching && this.state.isModalVisible ?
+                    <ActionButtonRounded2
+                      title="UPDATE"
+                      onButonPress={() => this.updateCartProduct()}
+                      containerStyle={styles.buttonStyle}
+                    /> :
+                    <ActivityIndicator size='small' color={color.brandColor} />
+                  }
                 </View>
               </ScrollView>
             </View>
@@ -1281,7 +1357,7 @@ resetFieldComment1 = () =>
         </Modal>
 
 
-{/* PLACE ORDER */}
+        {/* PLACE ORDER */}
         <Modal
           style={{
             justifyContent: 'flex-end',
@@ -1305,7 +1381,7 @@ resetFieldComment1 = () =>
             }> */}
           {/* <View style={styles.mainContainer}> */}
           <TouchableWithoutFeedback style={{ flex: 1 }} onPress={() => null}>
-          <View style={[styles.bottomContainer,{     borderBottomLeftRadius: 0,borderBottomRightRadius: 0}]}>
+            <View style={[styles.bottomContainer, { borderBottomLeftRadius: 0, borderBottomRightRadius: 0 }]}>
               <ScrollView>
                 <View style={{ marginHorizontal: 20, marginTop: 5 }}>
                   <FloatingLabelTextInput
@@ -1363,7 +1439,7 @@ resetFieldComment1 = () =>
                         borderBottomWidth: 0.5,
                         borderColor: '#a3a3a3',
                         width: '88%',
-                        marginLeft:6
+                        marginLeft: 6
                       }}>
                       <TouchableOpacity
                         onPress={() => {
@@ -1373,19 +1449,19 @@ resetFieldComment1 = () =>
                       </TouchableOpacity>
                     </View>
                   </View>
-                   
-                    {isDateTimePickerVisible && (
-                      <DateTimePicker
-                            //  mode="date"
-                        isVisible={isDateTimePickerVisible}
-                        onConfirm={(date) => this.handleDatePicked(date)}
-                        onCancel={() => hideDateTimePicker()}
-                      />
-                    )} 
-                    
+
+                  {isDateTimePickerVisible && (
+                    <DateTimePicker
+                      //  mode="date"
+                      isVisible={isDateTimePickerVisible}
+                      onConfirm={(date) => this.handleDatePicked(date)}
+                      onCancel={() => hideDateTimePicker()}
+                    />
+                  )}
+
                 </View>
 
-                <View style={[styles.btnView,{marginVertical:15}]}>
+                <View style={[styles.btnView, { marginVertical: 15 }]}>
                   <ActionButtonRounded
                     title="PLACE ORDER"
                     onButonPress={() => alert('Placeorder')}
@@ -1399,26 +1475,26 @@ resetFieldComment1 = () =>
           {/* </TouchableWithoutFeedback> */}
         </Modal>
 
-{/* CONTINUE PLACE ORDER */}
+        {/* CONTINUE PLACE ORDER */}
         <Modal
           isVisible={this.state.isContinueModalVisible}
           transparent={true}
-          onRequestClose={() => this.setState({isContinueModalVisible:false})}
+          onRequestClose={() => this.setState({ isContinueModalVisible: false })}
           onBackdropPress={() => this.setState({ isContinueModalVisible: false })}
           onBackButtonPress={() => this.setState({ isContinueModalVisible: false })}>
-          
+
           <TouchableWithoutFeedback
-            style={{flex: 1}}
-            onPress={() => this.setState({ isContinueModalVisible: false})}>
+            style={{ flex: 1 }}
+            onPress={() => this.setState({ isContinueModalVisible: false })}>
             <View style={styles.mainContainer}>
-              <TouchableWithoutFeedback style={{flex: 1}} onPress={() => null}>
+              <TouchableWithoutFeedback style={{ flex: 1 }} onPress={() => null}>
                 <View>
                   <View style={styles.alertContainer}>
                     <Image source={IconPack.RATE} style={styles.alertIcon} />
                     <Text style={styles.alertText}>Alert !</Text>
                   </View>
                   <TouchableOpacity
-                    onPress={() => this.setState({isContinueModalVisible: false})}
+                    onPress={() => this.setState({ isContinueModalVisible: false })}
                     style={styles.closeIconContainer}>
                     <Image source={IconPack.CLOSE} style={styles.closeIcon} />
                   </TouchableOpacity>
@@ -1432,7 +1508,7 @@ resetFieldComment1 = () =>
                       </Text>
                       <Text style={styles.middleText}>Quantity : 15</Text>
                     </View>
-                    <View style={{marginHorizontal: 20}}>
+                    <View style={{ marginHorizontal: 20 }}>
                       <Text style={styles.middleText}>
                         Are you sure ? You want to check out, Click continue to
                         proceed further
@@ -1451,36 +1527,36 @@ resetFieldComment1 = () =>
             </View>
           </TouchableWithoutFeedback>
         </Modal>
-   
 
-{/* DELETE ALL CART MODAL */}
+
+        {/* DELETE ALL CART MODAL */}
         <Modal
           isVisible={this.state.isDeleteCartVisible}
           transparent={true}
           onBackdropPress={() => this.setState({ isDeleteCartVisible: false })}
           onBackButtonPress={() => this.setState({ isDeleteCartVisible: false })}
-          onRequestClose={() => this.setState({isDeleteCartVisible:false})}>
+          onRequestClose={() => this.setState({ isDeleteCartVisible: false })}>
           <TouchableWithoutFeedback
-            style={{flex: 1}}
+            style={{ flex: 1 }}
             onPress={() =>
               this.setState({
                 isDeleteCartVisible: false,
               })
             }>
             <View style={styles.mainContainer}>
-              <TouchableWithoutFeedback style={{flex: 1}} onPress={() => null}>
+              <TouchableWithoutFeedback style={{ flex: 1 }} onPress={() => null}>
                 <View>
                   <View style={styles.alertContainer}>
                     <Image source={IconPack.RATE} style={styles.alertIcon} />
                     <Text style={styles.alertText}>Alert !</Text>
                   </View>
                   <TouchableOpacity
-                    onPress={() =>this.setState({isDeleteCartVisible: false,})}
+                    onPress={() => this.setState({ isDeleteCartVisible: false, })}
                     style={styles.closeIconContainer}>
                     <Image source={IconPack.CLOSE} style={styles.closeIcon} />
                   </TouchableOpacity>
                   <View style={styles.bottomContainer}>
-                    <View style={{marginHorizontal: 20, marginTop: 20}}>
+                    <View style={{ marginHorizontal: 20, marginTop: 20 }}>
                       <Text style={styles.middleText}>
                         Are you sure ? You want to delete all Cart item, Click
                         continue to proceed further
@@ -1499,141 +1575,141 @@ resetFieldComment1 = () =>
             </View>
           </TouchableWithoutFeedback>
         </Modal>
-    
-         
 
-{/* CART SUMMERY */}
+
+
+        {/* CART SUMMERY */}
         <Modal
-        
+
           isVisible={this.state.isCartWeightSummeryVisible}
           transparent={true}
           onBackButtonPress={() => this.setState({ isCartWeightSummeryVisible: false })}
-          onRequestClose={() => this.setState({isCartWeightSummeryVisible:false})}
-          onRequestClose={() => this.setState({isCartWeightSummeryVisible:false})}
-          style={{marginLeft: 20,marginRight:20,paddingTop:hp(11),paddingBottom:hp(11)}}>
+          onRequestClose={() => this.setState({ isCartWeightSummeryVisible: false })}
+          onRequestClose={() => this.setState({ isCartWeightSummeryVisible: false })}
+          style={{ marginLeft: 20, marginRight: 20, paddingTop: hp(11), paddingBottom: hp(11) }}>
           {/* <TouchableWithoutFeedback
             style={{flex: 1}}
             onPress={() =>this.setState({isCartWeightSummeryVisible: false,})}> */}
-            <>
-              <View style={styles.flex}>
-                <View style={styles.cartSummaryContainer}>
-                <Text style={[styles.alertText,{marginLeft:20}]}>Cart Summary</Text>
-                
-                <View style={styles.closeIconView}>
-                <TouchableOpacity
-                    onPress={()=>this.closeSummeryModal()}>
-                  <Image style={styles.closeIcon} source={IconPack.CLOSE} />
-                </TouchableOpacity>
-              </View>
+          <>
+            <View style={styles.flex}>
+              <View style={styles.cartSummaryContainer}>
+                <Text style={[styles.alertText, { marginLeft: 20 }]}>Cart Summary</Text>
 
+                <View style={styles.closeIconView}>
+                  <TouchableOpacity
+                    onPress={() => this.closeSummeryModal()}>
+                    <Image style={styles.closeIcon} source={IconPack.CLOSE} />
+                  </TouchableOpacity>
                 </View>
 
-                <FlatList
-                  style={{backgroundColor: '#ffffff'}}
-                  showsVerticalScrollIndicator={false}
-                  data={[
-                    {
-                      id: 1,
-                      category: 'IMP ASSEMBLE',
-                      Description:
-                        ' - Design No: IMP ASS 001(Grows Wt : 0.000, Net Wt: 0.000, Quantity: 1)',
-                      TotalQuantity: 2,
-                      TotalWT: 2,
-                    },
+              </View>
 
-                    {
-                      id: 2,
-                      category: 'Choco Chains',
-                      Description:
-                        ' - Design No: IMP ASS 001(Grows Wt : 0.000, Net Wt: 0.000,Quantity: 1)',
-                      TotalQuantity: 2,
-                      TotalWT: 2,
-                    },
+              <FlatList
+                style={{ backgroundColor: '#ffffff' }}
+                showsVerticalScrollIndicator={false}
+                data={[
+                  {
+                    id: 1,
+                    category: 'IMP ASSEMBLE',
+                    Description:
+                      ' - Design No: IMP ASS 001(Grows Wt : 0.000, Net Wt: 0.000, Quantity: 1)',
+                    TotalQuantity: 2,
+                    TotalWT: 2,
+                  },
 
-                    {
-                      id: 3,
-                      category: 'IMP ASSEMBLE',
-                      Description:
-                        ' - Design No: IMP ASS 001(Grows Wt : 0.000, Net Wt: 0.000,Quantity: 1)',
-                      TotalQuantity: 2,
-                      TotalWT: 2,
-                    },
-                    
-                    {
-                      id: 4,
-                      category: 'IMP ASSEMBLE',
-                      Description:
-                        ' - Design No: IMP ASS 001(Grows Wt : 0.000, Net Wt: 0.000,Quantity: 1)',
-                      TotalQuantity: 2,
-                      TotalWT: 2,
-                    },
-                    
-                    {
-                      id: 5,
-                      category: 'IMP ASSEMBLE',
-                      Description:
-                        ' - Design No: IMP ASS 001(Grows Wt : 0.000, Net Wt: 0.000,Quantity: 1)',
-                      TotalQuantity: 2,
-                      TotalWT: 2,
-                    },
-                  ]}
-                  renderItem={({item}) => (
-                    <View
-                      style={{
-                        marginHorizontal: 16,
-                        marginTop: 20,
-                      }}>
-                      <View style={{marginBottom: 20}}>
-                        <Text>{`category: ${item.category}`}</Text>
-                      </View>
-                      <View style={{marginBottom: 30}}>
-                        <Text>{`Description: \n${item.Description}`}</Text>
-                      </View>
-                      <View
-                        style={{
-                          flexDirection: 'row',
-                          justifyContent: 'space-between',
-                          marginBottom: 10,
-                        }}>
-                        <Text>{`Total Quantity: ${item.TotalQuantity}`}</Text>
-                        <Text>{`Total WT: ${item.TotalWT}`}</Text>
-                      </View>
-                      <View
-                        style={{
-                          borderBottomWidth: 1,
-                          borderColor: '#ddd',
-                          borderBottomWidth: 0.8,
-                        }}></View>
-                    </View>
-                  )}
-                />
-                <View style={styles.buttonContainer}>
+                  {
+                    id: 2,
+                    category: 'Choco Chains',
+                    Description:
+                      ' - Design No: IMP ASS 001(Grows Wt : 0.000, Net Wt: 0.000,Quantity: 1)',
+                    TotalQuantity: 2,
+                    TotalWT: 2,
+                  },
+
+                  {
+                    id: 3,
+                    category: 'IMP ASSEMBLE',
+                    Description:
+                      ' - Design No: IMP ASS 001(Grows Wt : 0.000, Net Wt: 0.000,Quantity: 1)',
+                    TotalQuantity: 2,
+                    TotalWT: 2,
+                  },
+
+                  {
+                    id: 4,
+                    category: 'IMP ASSEMBLE',
+                    Description:
+                      ' - Design No: IMP ASS 001(Grows Wt : 0.000, Net Wt: 0.000,Quantity: 1)',
+                    TotalQuantity: 2,
+                    TotalWT: 2,
+                  },
+
+                  {
+                    id: 5,
+                    category: 'IMP ASSEMBLE',
+                    Description:
+                      ' - Design No: IMP ASS 001(Grows Wt : 0.000, Net Wt: 0.000,Quantity: 1)',
+                    TotalQuantity: 2,
+                    TotalWT: 2,
+                  },
+                ]}
+                renderItem={({ item }) => (
                   <View
                     style={{
-                      flexDirection: 'row',
-                      justifyContent: 'space-between',
-                      marginTop: 30,
+                      marginHorizontal: 16,
+                      marginTop: 20,
                     }}>
-                    <View>
-                      <Text style={{fontSize: 16}}>Total WT: 276.000</Text>
+                    <View style={{ marginBottom: 20 }}>
+                      <Text>{`category: ${item.category}`}</Text>
                     </View>
-                    <View style={{marginLeft: 30}}>
-                      <Text style={{fontSize: 16}}>Total Quantity: 6</Text>
+                    <View style={{ marginBottom: 30 }}>
+                      <Text>{`Description: \n${item.Description}`}</Text>
                     </View>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                        marginBottom: 10,
+                      }}>
+                      <Text>{`Total Quantity: ${item.TotalQuantity}`}</Text>
+                      <Text>{`Total WT: ${item.TotalWT}`}</Text>
+                    </View>
+                    <View
+                      style={{
+                        borderBottomWidth: 1,
+                        borderColor: '#ddd',
+                        borderBottomWidth: 0.8,
+                      }}></View>
                   </View>
-                  <View style={[styles.btnView,{bottom:10}]}>
-                  <ActionButtonRounded
-                    title="OK"
-                    onButonPress={()=>this.closeSummeryModal()}
-                    containerStyle={styles.buttonStyle}
-                  />
+                )}
+              />
+              <View style={styles.buttonContainer}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    marginTop: 30,
+                  }}>
+                  <View>
+                    <Text style={{ fontSize: 16 }}>Total WT: 276.000</Text>
+                  </View>
+                  <View style={{ marginLeft: 30 }}>
+                    <Text style={{ fontSize: 16 }}>Total Quantity: 6</Text>
                   </View>
                 </View>
+                <View style={[styles.btnView, { bottom: 10 }]}>
+                  <ActionButtonRounded
+                    title="OK"
+                    onButonPress={() => this.closeSummeryModal()}
+                    containerStyle={styles.buttonStyle}
+                  />
+                </View>
               </View>
-            </>
+            </View>
+          </>
           {/* </TouchableWithoutFeedback> */}
         </Modal>
-   
+
 
       </Container>
     );
@@ -1669,7 +1745,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Helvetica',
     color: '#fbcb84',
     marginLeft: 10,
-    textAlign:'center'
+    textAlign: 'center'
   },
   mainContainer: {
     flex: 1,
@@ -1710,8 +1786,8 @@ const styles = StyleSheet.create({
   bottomContainer: {
     backgroundColor: '#fff',
     // // borderRadius: 16,
-     borderBottomLeftRadius: 16,
-     borderBottomRightRadius: 16
+    borderBottomLeftRadius: 16,
+    borderBottomRightRadius: 16
   },
   cartSummaryText: {
     textAlign: 'center',
@@ -1798,11 +1874,14 @@ const styles = StyleSheet.create({
   },
   tabCartMiddleContainer: {
     marginTop: 10,
-    marginHorizontal: 18,
+   // marginHorizontal: 18,
   },
   cartDetail: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    // marginRight:10
+    marginHorizontal: 20,
+
   },
   text: {
     marginBottom: 10,
@@ -1881,11 +1960,14 @@ function mapStateToProps(state) {
     successClearAllWislistVersion: state.cartContainerReducer.successClearAllWislistVersion,
     errorClearAllWislistVersion: state.cartContainerReducer.errorClearAllWislistVersion,
 
+    successEditCartProductVersion: state.cartContainerReducer.successEditCartProductVersion,
+    errorEditCartProductVersion: state.cartContainerReducer.errorEditCartProductVersion,
+
   };
 }
 
 export default connect(mapStateToProps, {
   getCartData, getWishlistData,
   deleteCartWishListProduct, getTotalCartCount, moveProduct,
-  clearAllCart, clearAllWishList
+  clearAllCart, clearAllWishList, updateEditedCartProduct
 })(withNavigationFocus(CartContainer));

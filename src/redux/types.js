@@ -153,3 +153,14 @@ export const CLEAR_ALL_WISHLIST_DATA = "clearWishlistData";
 export const CLEAR_ALL_WISHLIST_DATA_SUCCESS = "clearWishlistDataSuccess";
 export const CLEAR_ALL_WISHLIST_DATA_ERROR = "clearWishlistDataError";
 export const CLEAR_ALL_WISHLIST_DATA_RESET_REDUCER = "clearWishlistDataResetReducer";
+
+export const ADD_TO_CART_FROM_DETAILS_DATA = "addToCartFromDetailsData";
+export const ADD_TO_CART_FROM_DETAILS_DATA_SUCCESS = "addToCartFromDetailsDataSuccess";
+export const ADD_TO_CART_FROM_DETAILS_DATA_ERROR = "addToCartFromDetailsDataError";
+export const ADD_TO_CART_FROM_DETAILS_DATA_RESET_REDUCER = "addToCartFromDetailsDataResetReducer";
+
+export const EDIT_CART_PRODUCT_DATA = "editCartProductData";
+export const EDIT_CART_PRODUCT_DATA_SUCCESS = "editCartProductDataSuccess";
+export const EDIT_CART_PRODUCT_DATA_ERROR = "editCartProductDataError";
+export const c = "editCartProductDataResetReducer";
+

@@ -294,8 +294,6 @@ class ProductGrid extends Component {
 
                     fromValue1: filterParamsData.net_weight[0].min_net_weight,
                     toValue1: filterParamsData.net_weight[0].max_net_weight,
-
-
                 })
             }
         }
@@ -825,6 +823,12 @@ class ProductGrid extends Component {
         const { categoryData, page, fromValue, fromValue1, toValue1,
             toValue, isGrossWtSelected } = this.state
 
+            const { productGridData, sortByParamsData,
+                filterParamsData, filteredProductData, addProductToWishlistData,
+                addProductToCartData, productAddToCartPlusOneData,
+                totalCartCountData
+            } = this.props;
+
         const filterData = new FormData()
         filterData.append('table', 'product_master');
         filterData.append('mode_type', 'filter_data');
@@ -833,13 +837,23 @@ class ProductGrid extends Component {
         filterData.append('record', 10);
         filterData.append('page_no', 0);
         filterData.append('sort_by', '2');
-        filterData.append(isGrossWtSelected ? 'min_gross_weight' : 'min_gross_weight', isGrossWtSelected ? fromValue : fromValue1);
-        filterData.append(isGrossWtSelected ? 'max_gross_weight' : 'max_gross_weight', isGrossWtSelected ? toValue : toValue1);
+        filterData.append(isGrossWtSelected ? 'min_gross_weight' : 'min_net_weight', isGrossWtSelected ? fromValue : fromValue1);
+        filterData.append(isGrossWtSelected ? 'max_gross_weight' : 'max_net_weight', isGrossWtSelected ? toValue : toValue1);
 
         this.props.applyFilterProducts(filterData)
 
-        this.setState({ isFilterModalVisible: false })
+        this.setState({ isFilterModalVisible: false, })
 
+        if (filterParamsData && filterParamsData.length === undefined) {
+            this.setState({
+                fromValue: filterParamsData.gross_weight[0].min_gross_weight,
+                toValue: filterParamsData.gross_weight[0].max_gross_weight,
+
+                fromValue1: filterParamsData.net_weight[0].min_net_weight,
+                toValue1: filterParamsData.net_weight[0].max_net_weight,
+
+            })
+        }
     }
 
 
@@ -1067,7 +1081,7 @@ class ProductGrid extends Component {
                                                 </View>
                                             </View>
 
-                                            <View style={styles.filterTabContainer}>
+                                            {/* <View style={styles.filterTabContainer}>
                                                 <View>
                                                     <TouchableOpacity
                                                         onPress={() =>
@@ -1097,24 +1111,60 @@ class ProductGrid extends Component {
                                                     </Text>
                                                 </TouchableOpacity>
 
-                                            </View>
+                                            </View> */}
                                             <View style={styles.border} />
-
+                                            <View style={styles.grossWeightContainer}>
+                                                        <View style={styles.leftGrossWeight}>
+                                                        <View style={{backgroundColor: this.state.isGrossWtSelected ? '#D3D3D3': '#ffffff',flex:1,
+                                                         alignItems:'center',justifyContent:'center',width:'100%'}}>
+                                                        <TouchableOpacity onPress={() =>
+                                                            this.setState({ isGrossWtSelected: true })
+                                                        }>
+                                                                <Text style={styles.toText}>Gross weight</Text>
+                                                            </TouchableOpacity>  
+                                                        </View>
+                                                            
+                                                            <View style={{backgroundColor: this.state.isGrossWtSelected ? '#ffffff': '#D3D3D3',
+                                                            flex:1,alignItems:'center',justifyContent:'center',width:'100%'}}>
+                                                            <TouchableOpacity onPress={() =>
+                                                        this.setState({ isGrossWtSelected: false })} >
+                                                                <Text style={styles.toText}>Net weight</Text>
+                                                            </TouchableOpacity>
+                                                            </View>          
+                                                        </View>
+                                                        <View style={styles.rightGrossWeight}>
+                                                            <View>
+                                                                <Text style={styles.toText}> {this.state.isGrossWtSelected ? 'Gross weight' : 'Net weight' }</Text>
+                                                            </View>
+                                                        </View>
+                                                    </View> 
 
                                             {this.state.isGrossWtSelected ? (
                                                 <>
-                                                    <View style={styles.grossWeightContainer}>
+                                                    {/* <View style={styles.grossWeightContainer}>
                                                         <View style={styles.leftGrossWeight}>
-                                                            <TouchableOpacity>
+                                                        <View style={{backgroundColor:'red',flex:1,alignItems:'center',justifyContent:'center',width:'100%'}}>
+                                                        <TouchableOpacity onPress={() =>
+                                                            this.setState({ isGrossWtSelected: true })
+                                                        }>
                                                                 <Text style={styles.toText}>Gross weight</Text>
+                                                            </TouchableOpacity>  
+                                                        </View>
+                                                            
+                                                            <View style={{backgroundColor:'yellow',flex:1,alignItems:'center',justifyContent:'center',width:'100%'}}>
+                                                            <TouchableOpacity onPress={() =>
+                                                        this.setState({ isGrossWtSelected: false })} >
+                                                                <Text style={styles.toText}>net weight</Text>
                                                             </TouchableOpacity>
+                                                            </View>          
                                                         </View>
                                                         <View style={styles.rightGrossWeight}>
                                                             <View>
                                                                 <Text style={styles.toText}>Gross weight</Text>
                                                             </View>
                                                         </View>
-                                                    </View>
+                                                    </View> */}
+                            
                                                     <View style={styles.sliderContainer}>
                                                         <View style={{ flex: 1 }}></View>
                                                         <View style={{ flex: 2 }}>
@@ -1131,7 +1181,7 @@ class ProductGrid extends Component {
                                                                 <TextInput
                                                                     editable={false}
                                                                     style={styles.textInputStyle}
-                                                                    value={fromValue}
+                                                                    value={String(fromValue)}
                                                                     placeholder="0.000"
                                                                     placeholderTextColor="#000"
                                                                 />
@@ -1141,7 +1191,7 @@ class ProductGrid extends Component {
                                                                 <TextInput
                                                                     editable={false}
                                                                     style={styles.textInputStyle}
-                                                                    value={toValue}
+                                                                    value={String(toValue)}
                                                                     placeholder="0.000"
                                                                     placeholderTextColor="#000"
                                                                 />
@@ -1151,7 +1201,7 @@ class ProductGrid extends Component {
                                                 </>
                                             ) : (
                                                     <>
-                                                        <View style={styles.grossWeightContainer}>
+                                                        {/* <View style={styles.grossWeightContainer}>
                                                             <View style={styles.leftGrossWeight}>
                                                                 <TouchableOpacity>
                                                                     <Text style={styles.toText}>Net weight</Text>
@@ -1162,7 +1212,7 @@ class ProductGrid extends Component {
                                                                     <Text style={styles.toText}>Net weight</Text>
                                                                 </View>
                                                             </View>
-                                                        </View>
+                                                        </View> */}
                                                         <View style={styles.sliderContainer}>
                                                             <View style={{ flex: 1 }}></View>
                                                             <View style={{ flex: 2 }}>
@@ -1179,7 +1229,8 @@ class ProductGrid extends Component {
                                                                     <TextInput
                                                                         editable={false}
                                                                         style={styles.textInputStyle}
-                                                                        value={fromValue1}
+                                                                       //value={fromValue1}
+                                                                        value={String(fromValue1)}
                                                                         placeholder="0.000"
                                                                         placeholderTextColor="#000"
                                                                     />
@@ -1189,7 +1240,8 @@ class ProductGrid extends Component {
                                                                     <TextInput
                                                                         editable={false}
                                                                         style={styles.textInputStyle}
-                                                                        value={toValue1}
+                                                                       // value={toValue1}
+                                                                        value={String(toValue1)}
                                                                         placeholder="0.000"
                                                                         placeholderTextColor="#000"
                                                                     />
