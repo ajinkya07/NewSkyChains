@@ -169,3 +169,7 @@ export const PLACE_ORDER_DATA_SUCCESS = "placeOrderDataSuccess";
 export const PLACE_ORDER_DATA_ERROR = "placeOrderDataError";
 export const PLACE_ORDER_DATA_RESET_REDUCER = "placeOrderDataResetReducer";
 
+export const CUSTOMIZE_ORDER_DATA = "customizeOrderDataData";
+export const CUSTOMIZE_ORDER_DATA_SUCCESS = "customizeOrderDataSuccess";
+export const CUSTOMIZE_ORDER_DATA_ERROR = "customizeOrderDataError";
+export const CUSTOMIZE_ORDER_DATA_RESET_REDUCER = "customizeOrderDataResetReducer";

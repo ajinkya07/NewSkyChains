@@ -944,7 +944,7 @@ class ProductGrid extends Component {
                     )}
 
                     numColumns={2}
-                    keyExtractor={(item, index) => (item.collection_id).toString()}
+                    keyExtractor={(item, index) => (item.date_no).toString()}
                     style={{ marginTop: hp(1), }}
                     //onEndReachedThreshold={0.3}
                     //onEndReached={()=> this.LoadMoreData()}

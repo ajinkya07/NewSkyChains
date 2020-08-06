@@ -12,10 +12,21 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import {Container, Content, Icon, Picker} from 'native-base';
+import {Container, Content, Icon, Picker,ActionSheet} from 'native-base';
 import IconPack from '@login/IconPack';
 import FloatingLabelTextInput from '@floatingInputBox/FloatingLabelTextInput';
 import DateTimePicker from 'react-native-modal-datetime-picker';
+import ImagePicker from 'react-native-image-crop-picker';
+import { connect } from 'react-redux';
+
+import { submitCustomOrder} from '@customOrder/CustomOrderAction'
+
+var BUTTONS = ["Take Photo", "Choose from Library", "Cancel"];
+var DESTRUCTIVE_INDEX = 2;
+var CANCEL_INDEX = 2;
+
+
+
 const {width, height} = Dimensions.get('window');
 
 const PickerDropDown = () => {
@@ -40,7 +51,9 @@ const PickerDropDown = () => {
   );
 };
 
-export default class Customizable extends Component {
+
+
+ class Customizable extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -49,16 +62,21 @@ export default class Customizable extends Component {
       quantity: '',
       hookType: '',
       color: '',
+      diameter:'',
       remark: '',
       isDateTimePickerVisible: false,
+      imageUrl:''
     };
 
     this.lengthRef = React.createRef();
     this.quantityRef = React.createRef();
     this.hookTypeRef = React.createRef();
     this.colorTypeRef = React.createRef();
+    this.diameterRef = React.createRef();
     this.remarkRef = React.createRef();
   }
+
+
   showDateTimePicker = () => {
     this.setState({
       isDateTimePickerVisible: true,
@@ -93,12 +111,77 @@ export default class Customizable extends Component {
     this.setState({
       color: newText,
     });
-  handleRemarkChange = newText =>
+
+    handleDiameterChange = newText =>
+    this.setState({
+      diameter: newText,
+    });
+
+
+    handleRemarkChange = newText =>
     this.setState({
       remark: newText,
     });
+
+    // image selection
+
+    showActionSheet= () => {
+      return (
+        ActionSheet.show(
+          {
+            options: BUTTONS,
+            cancelButtonIndex: CANCEL_INDEX,
+            destructiveButtonIndex: DESTRUCTIVE_INDEX,
+          },
+          buttonIndex => {
+            switch (buttonIndex) {
+              case 0: {
+                this.openCamera();
+                break;
+              }
+              case 1: {
+                this.openImagePicker();
+                break;
+              }
+            }
+          }
+        )
+      );
+    }
+
+    openCamera = () => {
+      ImagePicker.openCamera({
+        width: wp(95),
+        height: hp(35),
+        cropping: true,
+        includeBase64: true
+      }).then(image => {
+        //     var  url = image &&  image.path.replace(/ /g, "%20");
+        this.setState({ imageUrl: image.path, })
+      });
+    }
+
+      openImagePicker = () => {
+    ImagePicker.openPicker({
+      width: wp(95),
+      height: hp(35),
+      includeBase64: true,
+      cropping: true
+    }).then(image => {
+      this.setState({ imageUrl: image.path, })
+    })
+  }
+
+  
+
+
+
+
+
   render() {
     const {isDateTimePickerVisible} = this.state;
+
+
     return (
       <SafeAreaView style={{flex: 1}}>
         <Container
@@ -106,36 +189,48 @@ export default class Customizable extends Component {
             flex: 1,
             backgroundColor: '#FFFFFF',
           }}>
-          <Content contentContainerStyle={{flex: 1}}>
-            <View
-              style={{
-                alignItems: 'center',
-                justifyContent: 'center',
-                flex: 1,
-                backgroundColor: '#11255a',
-              }}>
-              <Image
-                style={{
-                  height: 160,
-                  width: 160,
-                  resizeMode: 'cover',
-                }}
-                source={IconPack.PROFILE}
-              />
-            </View>
-            <View
-              style={{
-                backgroundColor: '#11255a',
-                flex: 2,
-              }}>
+          <Content contentContainerStyle={{ flex: 1 }}>
+            <ScrollView showsVerticalScrollIndicator={false}>
+
               <View
                 style={{
-                  borderTopLeftRadius: 20,
-                  borderTopRightRadius: 20,
-                  backgroundColor: '#ffffff',
+                  alignItems: 'center', justifyContent: 'center', flex: 1,
+                  backgroundColor: '#11255a',
                 }}>
-                <ScrollView showsVerticalScrollIndicator={false}>
-                  <View style={{marginHorizontal: 16, marginTop: 20}}>
+                {this.state.imageUrl == '' &&
+                  <Image
+                    style={{
+                      width: wp(95),
+                      height: hp(30),
+                    resizeMode: 'contain',
+                    }}
+                    source={IconPack.PROFILE}
+                  />
+                }
+                {this.state.imageUrl !== '' &&
+                  <Image
+                    style={{
+                      width: wp(95),
+                      height: hp(30),
+                      resizeMode: 'contain',
+                    }}
+                    source={{ uri: this.state.imageUrl }}
+                  />
+                }
+              </View>
+
+              <View
+                style={{
+                  backgroundColor: '#11255a',
+                  flex: 2,
+                }}>
+                <View
+                  style={{
+                    borderTopLeftRadius: 20,
+                    borderTopRightRadius: 20,
+                    backgroundColor: '#ffffff',
+                  }}>
+                  <View style={{ marginHorizontal: 16, marginTop: 20 }}>
                     <FloatingLabelTextInput
                       label="Gross Weight (gm)"
                       value={this.state.grossWeight}
@@ -165,7 +260,7 @@ export default class Customizable extends Component {
                           alignItems: 'center',
                           justifyContent: 'center',
                         }}>
-                        <Text style={{fontSize: 18, color: '#000000'}}>
+                        <Text style={{ fontSize: 18, color: '#000000',marginLeft:10 }}>
                           Select Karat
                         </Text>
                       </View>
@@ -197,9 +292,17 @@ export default class Customizable extends Component {
                       resetValue={this.resetFieldColor}
                       width="100%"
                       textInputRef={this.colorTypeRef}
+                      onSubmitEditing={() => this.diameterRef.current.focus()}
+                    />
+                    <FloatingLabelTextInput
+                      label="Diameter"
+                      value={this.state.diameter}
+                      onChangeText={this.handleDiameterChange}
+                      resetValue={this.resetDiameter}
+                      width="100%"
+                      textInputRef={this.diameterRef}
                       onSubmitEditing={() => this.remarkRef.current.focus()}
                     />
-
                     <View
                       style={{
                         marginTop: 26,
@@ -211,16 +314,9 @@ export default class Customizable extends Component {
                           borderColor: '#a3a3a3',
                           width: '100%',
                         }}>
-                        <TouchableOpacity
-                          onPress={() => {
-                            this.showDateTimePicker();
-                          }}>
+                        <TouchableOpacity onPress={() => this.showDateTimePicker()}>
                           <Text
-                            style={{
-                              color: '#a3a3a3',
-
-                              marginTop: 5,
-                              fontSize: 18,
+                            style={{color: '#a3a3a3',marginTop: 5,fontSize: 18,marginLeft:10
                             }}>
                             Delivery Date
                           </Text>
@@ -244,21 +340,28 @@ export default class Customizable extends Component {
                       textInputRef={this.remarkRef}
                     />
                   </View>
-                </ScrollView>
+
+                </View>
               </View>
-            </View>
+         
+            </ScrollView>
+
           </Content>
-          <Image
-            style={{
-              position: 'absolute',
-              top: height / 3.81,
-              right: 16,
-              resizeMode: 'cover',
-              width: 50,
-              height: 50,
-            }}
-            source={IconPack.PLUS_ICON}
-          />
+
+          <View style={{ position: 'absolute', top: height / 3.90, right: wp(10) }} >
+            <TouchableOpacity onPress={() => this.showActionSheet()}>
+              <Image
+                style={{
+                  //position: 'absolute',
+                  resizeMode: 'cover',
+                  width: 50,
+                  height: 50,
+                }}
+                source={IconPack.PLUS_ICON}
+              />
+            </TouchableOpacity>
+          </View>
+
           <View
             style={{
               height: 44,
@@ -272,7 +375,9 @@ export default class Customizable extends Component {
               <Text style={{fontSize: 16, color: '#fbcb84'}}>SUBMIT ORDER</Text>
             </TouchableOpacity>
           </View>
+    
         </Container>
+    
       </SafeAreaView>
     );
   }
@@ -289,3 +394,18 @@ const styles = StyleSheet.create({
     fontSize: hp('15%'),
   },
 });
+
+
+function mapStateToProps(state) {
+  return {
+    isFetching: state.customOrderReducer.isFetching,
+    error: state.customOrderReducer.error,
+    errorMsg: state.customOrderReducer.errorMsg,
+    successCustomOrderVersion: state.customOrderReducer.successCustomOrderVersion,
+    errorCustomOrderVersion: state.customOrderReducer.errorCustomOrderVersion,
+    customOrderData: state.customOrderReducer.customOrderData,
+
+  };
+}
+
+export default connect(mapStateToProps, {submitCustomOrder})(Customizable);

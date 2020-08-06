@@ -78,4 +78,9 @@ export const urls = {
         url:  url + 'Order'
     },       
     
+    CustomizeOrder:{
+        url:  url + 'Customized_Order'
+    },       
+    
+    
 }

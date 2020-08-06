@@ -1536,9 +1536,7 @@ class CartContainer extends Component {
                         marginLeft: 6
                       }}>
                       <TouchableOpacity
-                        onPress={() => {
-                          this.showDateTimePicker();
-                        }}>
+                        onPress={() => {this.showDateTimePicker()}}>
                         <Text style={styles.textDatePickerStyle}>{!this.state.date ? 'Date' : this.state.date}</Text>
                       </TouchableOpacity>
                     </View>
@@ -1548,7 +1546,7 @@ class CartContainer extends Component {
                     <DateTimePicker
                       isVisible={isDateTimePickerVisible}
                       onConfirm={(date) => this.handleDatePicked(date)}
-                      onCancel={() => hideDateTimePicker()}
+                      onCancel={this.hideDateTimePicker()}
                     />
                   )}
 
