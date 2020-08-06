@@ -49,7 +49,8 @@ import {
   import { strings } from '@values/strings'
   import axios from 'axios'
   import { urls } from '@api/urls'
-  
+  import { Container, Tab, Tabs, TabHeading, Icon, Toast, Fab, Picker } from 'native-base';
+
   const header = {
     headers: {
       'Accept': 'application/json',
@@ -296,11 +297,18 @@ export function placeOrderFromCart(data) {
 
     axios.post(urls.PlaceOrderFromCart.url, data, header).then(response => {
       console.warn("response placeOrderFromCart",response.data);
-      if (response.data.ack === '1') {
+      if (response.data.ack == '1') {
         dispatch(
           onSuccess(response.data, PLACE_ORDER_DATA_SUCCESS)
         )
+        
+      Toast.show({
+        text: response.data.msg ? response.data.msg : 'Order placed successfully',
+        duration: 2500,
+        type:'success'
+      })
       }
+
       else {
         dispatch(
           onFailure(response.data.msg, PLACE_ORDER_DATA_ERROR)

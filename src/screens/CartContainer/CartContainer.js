@@ -5,7 +5,7 @@ import {
   Image, TouchableWithoutFeedback,
   TouchableOpacity, FlatList,
   StyleSheet, ActivityIndicator,
-  Dimensions, ScrollView, SafeAreaView, Platform
+  Dimensions, ScrollView, SafeAreaView, Platform, Alert
 } from 'react-native';
 import { Container, Tab, Tabs, TabHeading, Icon, Toast, Fab, Picker } from 'native-base';
 import IconPack from '@login/IconPack';
@@ -28,7 +28,7 @@ import { strings } from '@values/strings';
 import FloatingLabelTextInput from '@floatingInputBox/FloatingLabelTextInput';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import moment from 'moment'
-import { FAB } from 'react-native-paper';
+import AsyncStorage from '@react-native-community/async-storage';
 
 
 var userId = ''
@@ -179,10 +179,10 @@ class CartContainer extends Component {
       isDeleteCartVisible: false,
       isCartWeightSummeryVisible: false,
       name: '',
-      mobileNo: '1980110078',
+      mobileNo: '',
       comments1: '',
       value: '',
-      email: 'John@mailinator.com',
+      email: '',
       isDateTimePickerVisible: false,
 
       successEditCartProductVersion: 0,
@@ -527,11 +527,22 @@ class CartContainer extends Component {
 
 
     if (this.state.successPlaceOrderVersion > prevState.successPlaceOrderVersion) {
-      Toast.show({
-        text: this.props.errorMsg ? this.props.errorMsg : strings.serverFailedMsg,
-        duration: 2500,
-        type:'success'
-      })
+      
+        const da = new FormData();
+        da.append('user_id', userId);
+        da.append('table', 'cart');
+
+        await this.props.getTotalCartCount(da)
+
+        const c2 = new FormData();
+        c2.append('user_id', userId);
+        c2.append('table', 'cart');
+  
+        await this.props.getCartData(c2)
+  
+        this.setState({
+          isPlaceOrderModalVisible:false        
+        })
     }
 
     if (this.state.errorPlaceOrderVersion > prevState.errorPlaceOrderVersion) {
@@ -770,7 +781,6 @@ class CartContainer extends Component {
   }
 
   editCartProduct = (editData) => {
-    console.warn("editData", editData);
 
     this.setState({
       isModalVisible: true,
@@ -784,6 +794,7 @@ class CartContainer extends Component {
 
     });
   }
+
   closeEditModal = () => {
     this.setState({ isModalVisible: false });
 
@@ -820,7 +831,6 @@ class CartContainer extends Component {
     });
   }
   resetFieldQuantity = () => {
-    console.warn("reset q");
     this.setState({
       quantity: '',
     });
@@ -965,15 +975,15 @@ class CartContainer extends Component {
       isDateTimePickerVisible: false,
     });
   };
+
   handleDatePicked(date) {
 
-    let d = moment(new Date(date).toISOString().slice(0, 10)).format('DD-MM-YYYY')
-    console.warn("d---", d);
+    let d1 = moment(new Date(date).toISOString().slice(0, 10)).format('DD-MM-YYYY')
+  
 
     this.setState({
-      date: d,
+      date: d1,
       isDateTimePickerVisible: false,
-
     })
   }
 
@@ -1078,11 +1088,17 @@ class CartContainer extends Component {
 
   }
 
-  placeOrderView = () => {
+  placeOrderView = async () => {
+    let n = await AsyncStorage.getItem('fullName');
+    let e = await AsyncStorage.getItem('emailId');
+    let m = await AsyncStorage.getItem('mobileNumber');
+
     this.setState({
       isPlaceOrderModalVisible: true,
-      isContinueModalVisible: false
-
+      isContinueModalVisible: false,
+      name:n,
+      email:e,
+      mobileNo:m
     })
   }
 
@@ -1109,11 +1125,7 @@ class CartContainer extends Component {
 
   updateCartProduct = async () => {
     const { editStateData, quantity, weight, comments, length } = this.state
-
-    console.warn("editStateData", editStateData.cart_wish_id);
-    console.warn("comments", comments);
-
-
+    
     const edit = new FormData();
 
     edit.append('table', 'cart');
@@ -1129,22 +1141,39 @@ class CartContainer extends Component {
   }
 
 
-  placeOrderFromCart = () =>{
+  placeOrderFromCart = async () =>{
 
     const{comments1, date} = this.state
+
+    const type = Platform.OS === 'ios' ? 'ios' : 'android'
+
+    let name = await AsyncStorage.getItem('fullName');
+    let emailId = await AsyncStorage.getItem('emailId');
+    let mobileNumber = await AsyncStorage.getItem('mobileNumber');
+
 
     const orderData = new FormData();
 
     orderData.append('user_id', userId);
-    orderData.append('full_name', 'ajinkya p');
-    orderData.append('email_id', 'ajinkyapalv@gmail.com');
-    orderData.append('mobile_number', '8446116325');
+    orderData.append('full_name', name);
+    orderData.append('email_id', emailId);
+    orderData.append('mobile_number', mobileNumber);
     orderData.append('delivery_date', date);
-    orderData.append('device_type', Platform.OS === 'ios' ? 'ios' : 'android');
+    orderData.append('which_device', type);
     orderData.append('remarks', comments1);
 
+    if (!date){
+      Toast.show({
+        text: 'Please select a date',
+        type: "danger",
+        duration:2500
+      })
+      alert('Please select a date')
+    }
+    else if (date != ''){
+      this.props.placeOrderFromCart(orderData)
+    }
 
-    this.props.placeOrderFromCart(orderData)
   }
 
 
@@ -1423,17 +1452,31 @@ class CartContainer extends Component {
           onBackdropPress={() => this.setState({ isPlaceOrderModalVisible: false })}
           onBackButtonPress={() => this.setState({ isPlaceOrderModalVisible: false })}>
 
-          {/* <TouchableWithoutFeedback
-            style={{flex: 1}}
-            onPress={() =>
-              this.setState({
-                isModalVisible: false,
-              })
-            }> */}
-          {/* <View style={styles.mainContainer}> */}
+
           <TouchableWithoutFeedback style={{ flex: 1 }} onPress={() => null}>
             <View style={[styles.bottomContainer, { borderBottomLeftRadius: 0, borderBottomRightRadius: 0 }]}>
+             
+             
+
+              <View style={{
+                backgroundColor: 'white', marginLeft: wp(42),
+                borderColor: 'red', borderWidth: 2,
+                alignItems: 'center', justifyContent: 'center',
+                height: hp(7), width: hp(7), borderRadius: hp(3.5),bottom:hp(3.2)
+              }}>
+                <TouchableOpacity
+                onPress={()=>this.setState({isPlaceOrderModalVisible:false})}
+                  hitSlop={{ position: 'absolute', top: 5, bottom: 5, left: 5, right: 5 }}
+                >
+                  <Image source={require('../../assets/image/remove.png')}
+                    style={{ height: hp(5), width: hp(5), }}
+                  />
+                </TouchableOpacity>
+              </View>
+
+
               <ScrollView>
+
                 <View style={{ marginHorizontal: 20, marginTop: 5 }}>
                   <FloatingLabelTextInput
                     label="Name"
@@ -1512,11 +1555,14 @@ class CartContainer extends Component {
                 </View>
 
                 <View style={[styles.btnView, { marginVertical: 15 }]}>
+                  { this.state.isPlaceOrderModalVisible && !this.props.isFetching ?
                   <ActionButtonRounded
                     title="PLACE ORDER"
                     onButonPress={() => this.placeOrderFromCart()}
                     containerStyle={styles.buttonStyle}
-                  />
+                  /> : 
+                  <ActivityIndicator size='small' color={color.brandColor} />
+                  }
                 </View>
               </ScrollView>
             </View>

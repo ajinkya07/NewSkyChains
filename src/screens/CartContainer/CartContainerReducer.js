@@ -340,6 +340,7 @@ export default function dataReducer(state = initialState, action) {
       };
 
     case PLACE_ORDER_DATA_SUCCESS:
+      console.warn("action.data.msg",action.data.msg);
       return {
         ...state,
         errorMsg: action.data.msg,
