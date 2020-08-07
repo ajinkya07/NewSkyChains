@@ -43,18 +43,18 @@ import {
     return dispatch => {
       dispatch(showLoadingIndicator(CUSTOMIZE_ORDER_DATA));
   
-      axios.post(urls.CustomizeOrder.url, data, header).then(response => {
-          console.warn("submitCusomOrder", response.data);
-          if (response.data.ack ==='1') {
-            dispatch(
-              onSuccess(response.data, CUSTOMIZE_ORDER_DATA_SUCCESS)
-            )
-          }
-          else {
-            dispatch(
-              onFailure(response.data.msg, CUSTOMIZE_ORDER_DATA_ERROR)
-            )
-          }
+      axios.post('http://skychain.jewelmarts.in/webservices/File_test', data, header).then(response => {
+          console.warn("submitCusomOrder", response);
+          // if (response.data.ack ==='1') {
+          //   dispatch(
+          //     onSuccess(response.data, CUSTOMIZE_ORDER_DATA_SUCCESS)
+          //   )
+          // }
+          // else {
+          //   dispatch(
+          //     onFailure(response.data.msg, CUSTOMIZE_ORDER_DATA_ERROR)
+          //   )
+          // }
         })
         .catch(function (error) {
           console.warn("AFTER submitCustomOrder ERROR", error);

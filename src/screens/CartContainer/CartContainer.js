@@ -1161,6 +1161,10 @@ class CartContainer extends Component {
     orderData.append('which_device', type);
     orderData.append('remarks', comments1);
 
+    var timeStamp = new Date().getTime() + 10 * 24 *60 * 60 * 1000
+    var timeStampDate = moment(new Date(timeStamp).toISOString().slice(0,10)).format('DD-MM-YYYY')
+
+
     if (!date){
       Toast.show({
         text: 'Please select a date',
@@ -1169,8 +1173,11 @@ class CartContainer extends Component {
       })
       alert('Please select a date')
     }
-    else if (date != ''){
+    else if (date != '' && timeStampDate < date ){
       this.props.placeOrderFromCart(orderData)
+    }
+    else{
+      alert('Date must be 10 days greater')
     }
 
   }

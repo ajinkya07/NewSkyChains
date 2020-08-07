@@ -221,83 +221,94 @@ class Customizable extends Component {
   }
 
 
-  submitCustomOrder = () => {
-    const { imageData, grossWeight,karatValue, netWeight,size,length, quantity,
+  submitCustomOrder = async () => {
+    let { imageData, grossWeight,karatValue, netWeight,size,length, quantity,
        hookType, color, diameter, remark, imageUrl, date } = this.state
 
-       var photo=''
-    // if (imageData) {
-    //    photo = {
-    //     uri: Platform.OS === 'android' ? imageData.path : imageData.path.replace('file://', ''),
-    //     type: imageData.mime,
-    //     name: 'photo.jpeg',
-    //   }
-    // }
-  
+     
 
-    if (!grossWeight) {
-      this.showToast('Please enter gross weight', 'danger')
-    }
-    else if (!netWeight) {
-      this.showToast('Please enter net weight', 'danger')
-    }
-    else if (!length) {
-      this.showToast('Please enter length', 'danger')
-    }
-    else if (!size) {
-      this.showToast('Please enter size', 'danger')
-    }
-    else if (!quantity) {
-      this.showToast('Please enter quantity', 'danger')
-    }
-    else if (!hookType) {
-      this.showToast('Please enter hookType', 'danger')
-    }
-    else if (!color) {
-      this.showToast('Please enter color', 'danger')
-    }
-    else if (!diameter) {
-      this.showToast('Please enter diameter', 'danger')
-    }
-    else if (!date) {
-      this.showToast('Please select delivery date', 'danger')
-    }
-    // if(!remark){
-    //   this.showToast('Please enter remark','danger')
-    // }
-    else if (!imageUrl) {
-      this.showToast('Please add image', 'danger')
-    }
-
-    else {
-      const data = new FormData();
-
-      data.append('user_id', userId);
-      data.append('gross_wt', grossWeight);
-      data.append('size', size);
-      data.append('net_wt', netWeight);
-      data.append('length', length);
-      data.append('delivery_date', date);
-      data.append('remark', remark);
-      // data.append('file', photo);
-
-      data.append('file', {
+    try {
+      var photo = {
         uri: Platform.OS === 'android' ? imageData.path : imageData.path.replace('file://', ''),
         type: imageData.mime,
         name: 'photo.jpg',
-      });
+      }
+      let data = new FormData();
 
-      
-      data.append('color', color);
-      data.append('diameter', diameter);
-      data.append('hook', hookType);
-      data.append('melting_id', karatValue);
+      data.append('file', 'ajinkya');
 
-      
-
-      this.props.submitCustomOrder(data)
-
+      await this.props.submitCustomOrder(data)
     }
+    catch(err){
+      console.warn("err0r--",err);
+    }
+
+
+
+    // if (!grossWeight) {
+    //   this.showToast('Please enter gross weight', 'danger')
+    // }
+    // else if (!netWeight) {
+    //   this.showToast('Please enter net weight', 'danger')
+    // }
+    // else if (!length) {
+    //   this.showToast('Please enter length', 'danger')
+    // }
+    // else if (!size) {
+    //   this.showToast('Please enter size', 'danger')
+    // }
+    // else if (!quantity) {
+    //   this.showToast('Please enter quantity', 'danger')
+    // }
+    // else if (!hookType) {
+    //   this.showToast('Please enter hookType', 'danger')
+    // }
+    // else if (!color) {
+    //   this.showToast('Please enter color', 'danger')
+    // }
+    // else if (!diameter) {
+    //   this.showToast('Please enter diameter', 'danger')
+    // }
+    // else if (!date) {
+    //   this.showToast('Please select delivery date', 'danger')
+    // }
+    // // if(!remark){
+    // //   this.showToast('Please enter remark','danger')
+    // // }
+    // else if (!imageUrl) {
+    //   this.showToast('Please add image', 'danger')
+    // }
+
+    // else {
+    //   const data = new FormData();
+
+    //   data.append('user_id', userId);
+    //   data.append('gross_wt', grossWeight);
+    //   data.append('size', size);
+    //   data.append('net_wt', netWeight);
+    //   data.append('length', length);
+    //   data.append('delivery_date', date);
+    //   data.append('remark', remark);
+    //   // data.append('file', photo);
+
+
+    //   data.append('file', {
+    //     uri: Platform.OS === 'android' ? imageData.path : imageData.path.replace('file://', ''),
+    //     type: imageData.mime,
+    //     name: 'photo.jpg',
+    //   });
+
+
+    //   data.append('color', color);
+    //   data.append('diameter', diameter);
+    //   data.append('hook', hookType);
+    //   data.append('melting_id', karatValue);
+
+      
+
+    //   this.props.submitCustomOrder(data)
+
+    // }
 
   }
 
@@ -317,7 +328,7 @@ class Customizable extends Component {
 
 
   PickerDropDown = () => {
-    const { karatValue } = this.state
+    let { karatValue } = this.state
 
     return (
       <View>
@@ -352,7 +363,7 @@ class Customizable extends Component {
 
 
   render() {
-    const { isDateTimePickerVisible } = this.state;
+    let { isDateTimePickerVisible } = this.state;
 
 
     return (
