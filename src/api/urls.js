@@ -9,7 +9,7 @@ export const urls = {
     baseUrl: "http://skychain.jewelmarts.in/webservices/",
     
   imageUrl: "http://jewel.jewelmarts.in/",
-//imageUrl: "http://skychain.jewelmarts.in/",
+ //imageUrl: "http://skychain.jewelmarts.in/",
 
 
     Login: {

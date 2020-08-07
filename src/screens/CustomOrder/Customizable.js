@@ -6,7 +6,7 @@ import {
   SafeAreaView,
   Image, TouchableOpacity,
   Dimensions,
-  ScrollView,
+  ScrollView,Platform,
 } from 'react-native';
 import {
   widthPercentageToDP as wp,
@@ -222,9 +222,18 @@ class Customizable extends Component {
 
 
   submitCustomOrder = () => {
-    const { imageData, grossWeight,karatValue, netWeight,size,length, quantity, hookType, color, diameter, remark, imageUrl, date } = this.state
+    const { imageData, grossWeight,karatValue, netWeight,size,length, quantity,
+       hookType, color, diameter, remark, imageUrl, date } = this.state
 
-    console.warn("karatValue",karatValue);
+       var photo=''
+    // if (imageData) {
+    //    photo = {
+    //     uri: Platform.OS === 'android' ? imageData.path : imageData.path.replace('file://', ''),
+    //     type: imageData.mime,
+    //     name: 'photo.jpeg',
+    //   }
+    // }
+  
 
     if (!grossWeight) {
       this.showToast('Please enter gross weight', 'danger')
@@ -261,7 +270,6 @@ class Customizable extends Component {
     }
 
     else {
-      console.warn("for submit");
       const data = new FormData();
 
       data.append('user_id', userId);
@@ -271,7 +279,15 @@ class Customizable extends Component {
       data.append('length', length);
       data.append('delivery_date', date);
       data.append('remark', remark);
-      data.append('file', imageData);
+      // data.append('file', photo);
+
+      data.append('file', {
+        uri: Platform.OS === 'android' ? imageData.path : imageData.path.replace('file://', ''),
+        type: imageData.mime,
+        name: 'photo.jpg',
+      });
+
+      
       data.append('color', color);
       data.append('diameter', diameter);
       data.append('hook', hookType);
