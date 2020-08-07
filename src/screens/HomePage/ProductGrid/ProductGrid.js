@@ -287,14 +287,20 @@ class ProductGrid extends Component {
         }
 
         if (this.state.successFilterParamsVersion > prevState.successFilterParamsVersion) {
-            if (filterParamsData && filterParamsData.length === undefined) {
-                this.setState({
-                    fromValue: filterParamsData.gross_weight[0].min_gross_weight,
-                    toValue: filterParamsData.gross_weight[0].max_gross_weight,
 
-                    fromValue1: filterParamsData.net_weight[0].min_net_weight,
-                    toValue1: filterParamsData.net_weight[0].max_net_weight,
-                })
+            if (filterParamsData && filterParamsData.length === undefined) {
+                if(filterParamsData.gross_weight){
+                    this.setState({
+                        fromValue: filterParamsData.gross_weight[0].min_gross_weight,
+                        toValue: filterParamsData.gross_weight[0].max_gross_weight,    
+                    })
+                }
+                if(filterParamsData.net_weight){
+                    this.setState({
+                        fromValue1: filterParamsData.net_weight[0].min_net_weight,
+                        toValue1: filterParamsData.net_weight[0].max_net_weight,
+                        })
+                }
             }
         }
 
@@ -823,11 +829,9 @@ class ProductGrid extends Component {
         const { categoryData, page, fromValue, fromValue1, toValue1,
             toValue, isGrossWtSelected } = this.state
 
-            const { productGridData, sortByParamsData,
-                filterParamsData, filteredProductData, addProductToWishlistData,
-                addProductToCartData, productAddToCartPlusOneData,
-                totalCartCountData
-            } = this.props;
+            const { filterParamsData} = this.props;
+
+            console.warn("filterParamsData",filterParamsData);
 
         const filterData = new FormData()
         filterData.append('table', 'product_master');
@@ -845,18 +849,35 @@ class ProductGrid extends Component {
         this.setState({ isFilterModalVisible: false, })
 
         if (filterParamsData && filterParamsData.length === undefined) {
-            this.setState({
-                fromValue: filterParamsData.gross_weight[0].min_gross_weight,
-                toValue: filterParamsData.gross_weight[0].max_gross_weight,
-
-                fromValue1: filterParamsData.net_weight[0].min_net_weight,
-                toValue1: filterParamsData.net_weight[0].max_net_weight,
-
-            })
+            if(filterParamsData.gross_weight){
+                this.setState({
+                    fromValue: filterParamsData.gross_weight[0].min_gross_weight,
+                    toValue: filterParamsData.gross_weight[0].max_gross_weight,    
+                })
+            }
+            if(filterParamsData.net_weight){
+                this.setState({
+                    fromValue1: filterParamsData.net_weight[0].min_net_weight,
+                    toValue1: filterParamsData.net_weight[0].max_net_weight,
+                    })
+            }
         }
     }
 
-
+    showNetWeightOrNot = () => {
+        const { sortByParamsData, filterParamsData } = this.props
+        if (filterParamsData && filterParamsData.length === undefined) {
+            if (filterParamsData.net_weight) {
+                this.setState({ isGrossWtSelected: false })
+            }
+            else {
+                Toast.show({
+                    text: 'No Data found to show',
+                    duration: 2500,
+                })
+            }
+        }
+    }
 
     render() {
         const { categoryData, gridData, isSortByModal, isFilterModalVisible,
@@ -1123,14 +1144,15 @@ class ProductGrid extends Component {
                                                                 <Text style={styles.toText}>Gross weight</Text>
                                                             </TouchableOpacity>  
                                                         </View>
-                                                            
+                                                            {filterParamsData && filterParamsData.length === undefined&&
+                                                              filterParamsData.net_weight &&
                                                             <View style={{backgroundColor: this.state.isGrossWtSelected ? '#ffffff': '#D3D3D3',
                                                             flex:1,alignItems:'center',justifyContent:'center',width:'100%'}}>
-                                                            <TouchableOpacity onPress={() =>
-                                                        this.setState({ isGrossWtSelected: false })} >
+                                                            <TouchableOpacity onPress={() => this.showNetWeightOrNot()} >
                                                                 <Text style={styles.toText}>Net weight</Text>
                                                             </TouchableOpacity>
-                                                            </View>          
+                                                            </View> }    
+
                                                         </View>
                                                         <View style={styles.rightGrossWeight}>
                                                             <View>

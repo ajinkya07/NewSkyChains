@@ -1,10 +1,16 @@
 
-var url = "http://jewel.jewelmarts.in/webservices/"
+//var url = "http://jewel.jewelmarts.in/webservices/"
+
+var url  = "http://skychain.jewelmarts.in/webservices/"
 
 export const urls = {
-    baseUrl: "http://jewel.jewelmarts.in/webservices/",
+    //baseUrl: "http://jewel.jewelmarts.in/webservices/",
+
+    baseUrl: "http://skychain.jewelmarts.in/webservices/",
     
-    imageUrl: "http://jewel.jewelmarts.in/",
+  imageUrl: "http://jewel.jewelmarts.in/",
+//imageUrl: "http://skychain.jewelmarts.in/",
+
 
     Login: {
         url: url + "User_registration/userLogin",

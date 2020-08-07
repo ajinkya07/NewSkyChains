@@ -57,7 +57,7 @@ import {
           }
         })
         .catch(function (error) {
-          console.log("AFTER OTP ERROR", error);
+          console.warn("AFTER submitCustomOrder ERROR", error);
   
           dispatch(
             onFailure(strings.serverFailedMsg, CUSTOMIZE_ORDER_DATA_ERROR)

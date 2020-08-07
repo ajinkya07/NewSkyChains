@@ -2,7 +2,7 @@ import React, { Component, useState } from 'react';
 import {
   Text,
   View,
-  StyleSheet,ActivityIndicator,
+  StyleSheet, ActivityIndicator,
   SafeAreaView,
   Image, TouchableOpacity,
   Dimensions,
@@ -37,9 +37,11 @@ class Customizable extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      karatValue: '',
+      karatValue: '18',
       grossWeight: '',
+      netWeight:'',
       length: '',
+      size:'',
       quantity: '',
       hookType: '',
       color: '',
@@ -48,6 +50,7 @@ class Customizable extends Component {
       isDateTimePickerVisible: false,
       imageUrl: '',
       date: '',
+      imageData: '',
 
       successCustomOrderVersion: 0,
       errorCustomOrderVersion: 0
@@ -56,6 +59,8 @@ class Customizable extends Component {
     userId = global.userId;
 
     this.lengthRef = React.createRef();
+    this.sizeRef = React.createRef();
+    this.netWeightRef = React.createRef();
     this.quantityRef = React.createRef();
     this.hookTypeRef = React.createRef();
     this.colorTypeRef = React.createRef();
@@ -85,11 +90,10 @@ class Customizable extends Component {
 
   async componentDidUpdate(prevProps, prevState) {
     const { customOrderData } = this.props;
-    console.warn("customOrderData", customOrderData);
 
     if (this.state.successCustomOrderVersion > prevState.successCustomOrderVersion) {
-        this.showToast(this.props.errorMsg, 'success');
-      
+      this.showToast(this.props.errorMsg, 'success');
+
     }
     if (this.state.errorCustomOrderVersion > prevState.errorCustomOrderVersion) {
       this.showToast(this.props.errorMsg, 'danger');
@@ -125,6 +129,19 @@ class Customizable extends Component {
     this.setState({
       grossWeight: newText,
     });
+
+    
+  handleNetWeightChange = newText =>
+  this.setState({
+    netWeight: newText,
+  });
+
+  
+  handleSizeChange = newText =>
+    this.setState({
+      size: newText,
+    });
+
   handleLengthChange = newText =>
     this.setState({
       length: newText,
@@ -186,8 +203,9 @@ class Customizable extends Component {
       cropping: true,
       includeBase64: true
     }).then(image => {
+      console.warn("image", image);
       //     var  url = image &&  image.path.replace(/ /g, "%20");
-      this.setState({ imageUrl: image.path, })
+      this.setState({ imageUrl: image.path, imageData: image })
     });
   }
 
@@ -198,22 +216,27 @@ class Customizable extends Component {
       includeBase64: true,
       cropping: true
     }).then(image => {
-      this.setState({ imageUrl: image.path, })
+      this.setState({ imageUrl: image.path, imageData: image })
     })
   }
 
 
   submitCustomOrder = () => {
-    const { grossWeight, length, quantity, hookType, color, diameter, remark, imageUrl, date } = this.state
+    const { imageData, grossWeight,karatValue, netWeight,size,length, quantity, hookType, color, diameter, remark, imageUrl, date } = this.state
 
-    console.warn("url", imageUrl);
-
+    console.warn("karatValue",karatValue);
 
     if (!grossWeight) {
       this.showToast('Please enter gross weight', 'danger')
     }
+    else if (!netWeight) {
+      this.showToast('Please enter net weight', 'danger')
+    }
     else if (!length) {
       this.showToast('Please enter length', 'danger')
+    }
+    else if (!size) {
+      this.showToast('Please enter size', 'danger')
     }
     else if (!quantity) {
       this.showToast('Please enter quantity', 'danger')
@@ -228,7 +251,7 @@ class Customizable extends Component {
       this.showToast('Please enter diameter', 'danger')
     }
     else if (!date) {
-      this.showToast('Please select date', 'danger')
+      this.showToast('Please select delivery date', 'danger')
     }
     // if(!remark){
     //   this.showToast('Please enter remark','danger')
@@ -243,15 +266,18 @@ class Customizable extends Component {
 
       data.append('user_id', userId);
       data.append('gross_wt', grossWeight);
-      data.append('size', length);
-      data.append('net_wt', grossWeight);
+      data.append('size', size);
+      data.append('net_wt', netWeight);
       data.append('length', length);
       data.append('delivery_date', date);
       data.append('remark', remark);
-      data.append('file', imageUrl);
+      data.append('file', imageData);
       data.append('color', color);
       data.append('diameter', diameter);
       data.append('hook', hookType);
+      data.append('melting_id', karatValue);
+
+      
 
       this.props.submitCustomOrder(data)
 
@@ -290,8 +316,8 @@ class Customizable extends Component {
           style={{ height: 50, width: wp(55) }}
           selectedValue={karatValue}
           onValueChange={(itemValue, itemIndex) => this.setSelectedValue(itemValue)}>
-          <Picker.Item label="18k" value="18k" />
-          <Picker.Item label="22k" value="22k" />
+          <Picker.Item label="18k" value="18" />
+          <Picker.Item label="22k" value="22" />
         </Picker>
       </View>
     );
@@ -299,8 +325,10 @@ class Customizable extends Component {
 
   renderLoader = () => {
     return (
-      <View style={{    position: 'absolute',height: hp(100),width: wp(100),
-      alignItems: 'center',justifyContent: 'center',}}>
+      <View style={{
+        position: 'absolute', height: hp(100), width: wp(100),
+        alignItems: 'center', justifyContent: 'center',
+      }}>
         <ActivityIndicator size="large" color={color.white} />
       </View>
     );
@@ -366,18 +394,42 @@ class Customizable extends Component {
                     resetValue={this.resetFieldGross}
                     width="100%"
                     keyboardType="numeric"
-                    onSubmitEditing={() => this.lengthRef.current.focus()}
+                    onSubmitEditing={() => this.netWeightRef.current.focus()}
                   />
                   <FloatingLabelTextInput
-                    label="Length/Size (Inches)"
+                    label="Net Weight (gm)"
+                    value={this.state.netWeight}
+                    onChangeText={this.handleNetWeightChange}
+                    resetValue={this.resetFieldNet}
+                    width="100%"
+                    keyboardType="numeric"
+                    textInputRef={this.netWeightRef}
+                    onSubmitEditing={() => this.lengthRef.current.focus()}
+                  />
+
+                  <FloatingLabelTextInput
+                    label="Length (Inches)"
                     value={this.state.length}
                     onChangeText={this.handleLengthChange}
                     resetValue={this.resetFieldLength}
                     width="100%"
                     keyboardType="numeric"
                     textInputRef={this.lengthRef}
+                    onSubmitEditing={() => this.sizeRef.current.focus()}
+                  />
+
+                  <FloatingLabelTextInput
+                    label="Size (Inches)"
+                    value={this.state.size}
+                    onChangeText={this.handleSizeChange}
+                    resetValue={this.resetFieldSize}
+                    width="100%"
+                    keyboardType="numeric"
+                    textInputRef={this.sizeRef}
                     onSubmitEditing={() => this.quantityRef.current.focus()}
                   />
+
+
                   <View
                     style={{
                       flexDirection: 'row',
@@ -506,7 +558,7 @@ class Customizable extends Component {
             </View>
           </TouchableOpacity>
 
-            {this.props.isFetching && this.renderLoader()}
+          {this.props.isFetching && this.renderLoader()}
 
         </Container>
 
