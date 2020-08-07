@@ -38,13 +38,13 @@ import {
   }
   
   export function submitCustomOrder(data) {
-  console.log("submitCustomOrder data",data);
+  console.warn("submitCustomOrder data",data);
   
     return dispatch => {
       dispatch(showLoadingIndicator(CUSTOMIZE_ORDER_DATA));
   
       axios.post(urls.CustomizeOrder.url, data, header).then(response => {
-          console.log("submitCusomOrder", response.data);
+          console.warn("submitCusomOrder", response.data);
           if (response.data.ack ==='1') {
             dispatch(
               onSuccess(response.data, CUSTOMIZE_ORDER_DATA_SUCCESS)

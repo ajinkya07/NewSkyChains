@@ -26,11 +26,12 @@ import {
         };
   
       case CUSTOMIZE_ORDER_DATA_SUCCESS:
+        console.warn("action.data.data",action.data.data);
         return {
           ...state,
           errorMsg: "",
           isFetching: false,
-          customOrderData: action.data.data,
+          customOrderData: action.data,
           successCustomOrderVersion: ++state.successCustomOrderVersion,
           error: false
         };

@@ -980,7 +980,6 @@ class CartContainer extends Component {
 
     let d1 = moment(new Date(date).toISOString().slice(0, 10)).format('DD-MM-YYYY')
   
-
     this.setState({
       date: d1,
       isDateTimePickerVisible: false,
