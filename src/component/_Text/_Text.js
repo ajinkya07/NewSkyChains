@@ -21,6 +21,7 @@ export default class _Text extends Component {
       fsLogoName,
       bold,
       style,
+      styles,
       fsSmall,
       fsExtraSmall,
       fwSmall,
@@ -107,11 +108,11 @@ export default class _Text extends Component {
   return (
       <Text
         numberOfLines={numberOfLines}
-        style={[style,{
+        style={[{
           fontSize: defaultFontSize,
           fontWeight: defaultFontWeight,
           color: textColor ? textColor : color.black,
-        }]}>
+        },style]}>
         {propChildren}
       </Text>
 

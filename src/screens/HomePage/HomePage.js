@@ -27,7 +27,8 @@ import { Toast } from 'native-base';
 import _ from 'lodash';
 import { urls } from '@api/urls'
 import { withNavigationFocus } from "@react-navigation/compat";
-
+import { ThemeProvider } from '@react-navigation/native';
+import Theme from '../../values/Theme'
 
 
 var userId = ''
@@ -394,7 +395,8 @@ class HomePage extends Component {
                         defaultSource={require('../../assets/image/default.png')}
                         source={{ uri: baseUrl + item.image_name }}
                     />
-                    <_Text numberOfLines={2} fsPrimary
+                    <_Text numberOfLines={2} 
+                        fsPrimary
                         style={{ textAlign: 'center', marginTop: hp(1) }}>
                         {item.col_name}
                     </_Text>
@@ -750,7 +752,9 @@ class HomePage extends Component {
                                     fsExtraLarge
                                     fwPrimary
                                     numberOfLines={1}
-                                    textColor={color.brandColor}>
+                                    textColor={color.brandColor}
+                                    style={{...Theme.ffLatoRegular21}}
+                                    >
                                     {strings.categoryDesigns}
                                 </_Text>
                             </View>
@@ -764,6 +768,7 @@ class HomePage extends Component {
                                         numberOfLines={1}
                                         fwSmall
                                         textColor={color.brandColor}
+                                        style={{...Theme.ffLatoRegular18}}
                                     >
                                         {strings.seeMore}
                                     </_Text>
@@ -800,7 +805,9 @@ class HomePage extends Component {
                                         fsExtraLarge
                                         fwPrimary
                                         numberOfLines={1}
-                                        textColor={color.brandColor}>
+                                        textColor={color.brandColor}
+                                        style={{...Theme.ffLatoRegular21}}
+                                        >
                                         {data.key}
                                     </_Text>
                                 </View>
@@ -838,7 +845,8 @@ class HomePage extends Component {
                             <View style={socialTextView}>
                                 <_Text
                                     textColor={color.brandColor}
-                                    style={{ textAlign: 'center' }} fsExtraLarge fwSmall>
+                                    style={{ textAlign: 'center',...Theme.ffLatoRegular20, }} 
+                                    fsExtraLarge fwSmall>
                                     Follow us on social media
                             </_Text>
                             </View>

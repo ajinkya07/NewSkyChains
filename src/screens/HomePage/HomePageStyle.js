@@ -19,7 +19,7 @@ export default {
   },
   mainContainer: {
     flex: 1,
-    backgroundColor: color.white,
+    backgroundColor: '#f7f7f7',
     // marginBottom:hp(1)
   },
 

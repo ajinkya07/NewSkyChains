@@ -8,6 +8,8 @@ import {
 } from 'react-native-responsive-screen';
 import { Header, Left, Body, Right, Button, Title } from 'native-base';
 import AsyncStorage from '@react-native-community/async-storage';
+import { Theme } from '@values/Theme'
+
 
 class _Header extends Component {
   constructor(props) {
@@ -39,12 +41,25 @@ class _Header extends Component {
                 source={require('../../assets/image/back.png')}
               />
             ) :
-                (
-                  <View style={{ marginTop: 2, marginBottom: 2, width: wp(40) }}>
-                    <Text style={{ fontWeight: 'bold', color: color.brandColor, fontSize: hp(2.5) }}>SKY CHAINS</Text>
-                    <Text style={{fontWeight:'400', color: color.brandColor, marginTop: 2, fontSize: hp(1.8) }}>Designs Infinite</Text>
-                  </View>
-                )}
+              (
+                <View style={{ marginTop: 2, marginBottom: 2, width: wp(40) }}>
+                  <Text style={{
+                    fontFamily: 'Lato-Regular',
+                    color: color.brandColor,
+                    fontSize: hp(2.5),
+                    // Theme.ffLatoRegular16
+                  }}>
+                    SKY CHAINS
+                      </Text>
+                  <Text style={{
+                    fontWeight: '400',
+                    // fontFamily: 'Lato-Regular',
+                    color: color.brandColor,
+                    marginTop: 2,
+                    fontSize: hp(1.8)
+                  }}>Designs Infinite</Text>
+                </View>
+              )}
           </Button>
         </Left>
 
