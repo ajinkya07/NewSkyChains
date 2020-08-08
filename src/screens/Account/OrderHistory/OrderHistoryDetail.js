@@ -4,7 +4,7 @@ import {
   View,
   ScrollView,
   SafeAreaView,
-  Platform,
+  Platform,TouchableWithoutFeedback,
   StyleSheet,
   Image, FlatList,
   TouchableOpacity, ActivityIndicator,
@@ -24,6 +24,7 @@ import _Text from '@text/_Text'
 import { color } from '@values/colors';
 import CartContainer from '@cartContainer/CartContainer'
 import { getTotalCartCount} from '@homepage/HomePageAction';
+import IconPack from '@login/IconPack';
 
 
 
@@ -53,7 +54,7 @@ class OrderHistoryDetail extends Component {
 
       successTotalCartCountVersion: 0,
       errorTotalCartCountVersion: 0,
-
+      detailModal:false
     };
     userId = global.userId
   }
@@ -214,7 +215,6 @@ class OrderHistoryDetail extends Component {
 
   OrderHistoryDetailComponent = (data) => {
 
-    console.warn("data---",data.image_zoom);
     return (
       <View style={styles.container}>
         <Text style={styles.productIdText}>Product Id: {data.product_id}</Text>
@@ -280,6 +280,14 @@ class OrderHistoryDetail extends Component {
   }
 
 
+  openDetailModal = () =>{
+    this.setState({
+      detailModal:true
+    })
+  }
+
+
+
   OrderDetailBottomTab = (d) => {
     return (
       <View style={styles.cardContainer}>
@@ -289,7 +297,7 @@ class OrderHistoryDetail extends Component {
             alignItems: 'center',
             justifyContent: 'center',
           }}>
-          <TouchableOpacity onPress={() => alert('Detail')}>
+          <TouchableOpacity onPress={() => this.openDetailModal()}>
             <Text style={styles.detailText}>DETAIL</Text>
           </TouchableOpacity>
         </View>
@@ -374,10 +382,87 @@ class OrderHistoryDetail extends Component {
           }
 
 
+
+          {this.state.detailModal &&
+            <Modal
+              isVisible={this.state.detailModal}
+              transparent={true}
+              onRequestClose={() => this.setState({ detailModal: false })}
+              onBackdropPress={() => this.setState({ detailModal: false })}
+              onBackButtonPress={() => this.setState({ detailModal: false })}
+
+              style={{
+                justifyContent: 'flex-end',
+                marginBottom: hp(8),
+                marginLeft: 10,
+                marginRight: 10,
+                
+                alignItems:'center'
+              }}>
+              <SafeAreaView>
+                <View
+                  style={{
+                    backgroundColor: 'white',
+                    justifyContent: 'center',
+                    paddingHorizontal: hp(1),
+                    borderColor: color.gray,
+                    borderWidth: 0.5,
+                    borderRadius:10
+
+                  }}>
+                  <View style={{
+                    marginTop: 10, marginHorizontal: 4,
+                    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'
+                  }}>
+
+                    <Text style={{ fontSize: 16, fontWeight: '400',color:color.brandColor }}>Order History Summery</Text>
+
+                    <TouchableOpacity
+                      hitSlop={{ top: 5, left: 5, bottom: 5, right: 5 }}
+                      onPress={() => this.setState({ detailModal: false })}>
+                      <Image
+                        style={{ alignSelf: 'flex-end', height: hp(2), width: hp(2), marginTop: 3 }}
+                        source={require('../../../assets/image/BlueIcons/Cross.png')}
+                      />
+                    </TouchableOpacity>
+
+                  </View>
+
+                  <View style={{ marginVertical: 8, borderBottomColor: 'gray', alignItems:'center',
+                  borderBottomWidth: 1, width: wp(88) }} />
+
+                  <View style={{ marginTop:5,justifyContent:'space-between',flexDirection:'row'}}>
+                    <_Text fsPrimary fwSmall>Order No.</_Text>
+                    <_Text fsPrimary fwSmall>75</_Text>
+                  </View>
+
+                  
+                  <View style={{ marginTop:5,justifyContent:'space-between',flexDirection:'row'}}>
+                    <_Text fsPrimary fwSmall>Total Items</_Text>
+                    <_Text fsPrimary fwSmall>4</_Text>
+                  </View>
+
+                  
+                  <View style={{ marginTop:5,justifyContent:'space-between',flexDirection:'row'}}>
+                  <_Text fsPrimary fwSmall>Total weight</_Text>
+                    <_Text fsPrimary fwSmall>167</_Text>
+                  </View>
+
+                  
+                  <View style={{ marginTop:5,marginBottom:10,justifyContent:'space-between',flexDirection:'row'}}>
+                    <_Text fsPrimary fwSmall>Order Date</_Text>
+                    <_Text fsPrimary fwSmall>2020-07-04</_Text>
+                  </View>
+
+                </View>
+              </SafeAreaView>
+
+            </Modal>
+          }
+
           {this.props.isFetching ? this.renderLoader() : null}
 
 
-          <SafeAreaView />
         </SafeAreaView>
       </>
     );
@@ -385,6 +470,40 @@ class OrderHistoryDetail extends Component {
 }
 
 const styles = StyleSheet.create({
+  textStyle: {
+    color: '#a3a3a3',
+    fontSize: 13,
+  },
+  topContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginHorizontal: 16,
+    height: 36,
+    alignItems: 'center',
+  },
+  titleText: {
+    fontSize: 18,
+    color: '#11255a',
+  },
+  closeIcon: {
+    width: 20,
+    height: 20,
+    resizeMode: 'cover',
+  },
+  border: {
+    borderBottomColor: '#a3a3a3',
+    borderBottomWidth: 0.3,
+    marginHorizontal: 5,
+  },
+  bottomContainer: {
+    marginHorizontal: 16,
+    marginTop: 10,
+  },
+  contentView: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 6,
+  },
   bottomLine: {
     borderBottomColor: 'gray',
     borderBottomWidth: 0.6,

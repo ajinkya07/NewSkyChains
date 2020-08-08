@@ -1062,6 +1062,7 @@ class ProductGrid extends Component {
                                 />
                             </View>
                         </SafeAreaView>
+               
                     </Modal>
                 </View>
 
