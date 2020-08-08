@@ -31,6 +31,7 @@ import FastImage from 'react-native-fast-image';
 import _CustomHeader from '@customHeader/_CustomHeader'
 import { parseInt } from 'lodash';
 import { getTotalCartCount } from '@homepage/HomePageAction';
+const qs = require('query-string');
 
 
 
@@ -79,14 +80,14 @@ class ProductDetails extends React.Component {
       remark: '',
       isHideDetail: true,
       length: '',
-      weight:'',
+      weight: '',
       productItem: productItem,
       successProductDetailsVersion: 0,
       errorProductDetailsVersion: 0,
       currentPage: 0,
 
-      successAddCartDetailsVersion:0,
-      errorAddCartDetailsVersion:0
+      successAddCartDetailsVersion: 0,
+      errorAddCartDetailsVersion: 0
 
     };
     userId = global.userId;
@@ -126,7 +127,7 @@ class ProductDetails extends React.Component {
       };
     }
 
-    
+
     if (successAddCartDetailsVersion > prevState.successAddCartDetailsVersion) {
       newState = {
         ...newState,
@@ -150,9 +151,9 @@ class ProductDetails extends React.Component {
         this.setState({
           productDetailsStateData: productDetailsData.data[0],
           length: productDetailsData !== undefined ? productDetailsData.data[0].length : '',
-          weight: productDetailsData !== undefined ?  
-                  productDetailsData.data[0].weight && (productDetailsData.data[0].weight).length !== 0
-                  ? productDetailsData.data[0].weight : '' : '',
+          weight: productDetailsData !== undefined ?
+            productDetailsData.data[0].weight && (productDetailsData.data[0].weight).length !== 0
+              ? productDetailsData.data[0].weight : '' : '',
 
         })
       } else {
@@ -172,13 +173,15 @@ class ProductDetails extends React.Component {
     }
 
 
-    
+
     if (this.state.successAddCartDetailsVersion > prevState.successAddCartDetailsVersion) {
-      console.warn("addCartDetailsData",addCartDetailsData);
       if (addCartDetailsData.ack == '1') {
-        this.showToast(this.props.errorMsg, );       
+        Toast.show({
+          text:this.props.errorMsg,
+          duration:2500
+        })
+      }
     }
-  }
     if (this.state.errorAddCartDetailsVersion > prevState.errorAddCartDetailsVersion) {
       this.showToast(this.props.errorMsg, 'danger');
     }
@@ -292,99 +295,97 @@ class ProductDetails extends React.Component {
 
   renderLoader = () => {
     return (
-        <View style={{
-            position: 'absolute', height: hp(100), width: wp(100),
-            alignItems: 'center', justifyContent: 'center',
-        }}>
-            <ActivityIndicator size="large" color={color.brandColor} />
-        </View>
+      <View style={{
+        position: 'absolute', height: hp(100), width: wp(100),
+        alignItems: 'center', justifyContent: 'center',
+      }}>
+        <ActivityIndicator size="large" color={color.brandColor} />
+      </View>
     );
-};
+  };
 
 
-setSelectedValue = (w) =>{
-  this.setState({
-    weight:w
-  })
-}
-
- PickerWeightDropDown = (weight) => {
-  return (
-    <View >
-
-      <Picker
-        iosIcon={<Icon name="arrow-down" style={{ marginRight: hp(4), fontSize: 22 }} />}
-        mode="dropdown"
-        style={{ height: 50, width: wp(55) }}
-        selectedValue={weight}
-        onValueChange={(itemValue, itemIndex) => setSelectedValue(itemValue)}>
-        <Picker.Item label={(weight).toString()} value={parseInt(weight)} />
-      </Picker>
-    </View>
-  );
-};
-
-
-
-addtoCart = (d) =>{
-
-  const {length,count, remark, weight} = this.state
-  
-  // console.warn("data" , count, typeof count);
-
-  const addCartData = new FormData();
-  
-  addCartData.append('Add_To_Cart', [
-    {'user_id':userId, 
-    "table":'cart', 
-    'product_id':d.product_master_id,
-    'product_inventory_table':"product_master",
-    'gross_wt':d.key_value[0],
-    'net_wt':d.key_value[1],
-    'melting_id':d.default_melting_id,
-    'no_quantity':count,
-    'device_type':Platform.OS === 'ios' ? 'ios': 'android',
-    'remarks':remark,
-    'size':d.key_value[2],
-    'weight':parseInt(weight),
-    'length':length
-
-    }]);
-
-
-  this.props.addToCartFromDetails(addCartData)
-
-}
-
-
-addToWishList = (d) =>{
-
-  const {length,count, remark, weight} = this.state
-  
-  // console.warn("data" , count, typeof count);
-
-  const addWishData = new FormData();
-  
-  addWishData.append('Add_To_Cart', [
-    {'user_id':userId, 
-    "table":'wishlist', 
-    'product_id':d.product_master_id,
-    'product_inventory_table':"product_master",
-    'gross_wt':d.key_value[0],
-    'net_wt':d.key_value[1],
-    'melting_id':d.default_melting_id,
-    'no_quantity':count,
-    'device_type':Platform.OS === 'ios' ? 'ios': 'android',
-    'remarks':remark,
-    'size':d.key_value[2],
-    'weight':parseInt(weight),
-    'length':length
-
-    }]);
-
-
-  this.props.addToCartFromDetails(addWishData)
+  setSelectedValue = (w) => {
+    this.setState({
+      weight: w
+    })
   }
+
+  PickerWeightDropDown = (weight) => {
+    return (
+      <View >
+
+        <Picker
+          iosIcon={<Icon name="arrow-down" style={{ marginRight: hp(4), fontSize: 22 }} />}
+          mode="dropdown"
+          style={{ height: 50, width: wp(55) }}
+          selectedValue={weight}
+          onValueChange={(itemValue, itemIndex) => setSelectedValue(itemValue)}>
+          <Picker.Item label={(weight).toString()} value={parseInt(weight)} />
+        </Picker>
+      </View>
+    );
+  };
+
+
+
+  addtoCart = (d) => {
+
+    const { length, count, remark, weight } = this.state
+
+    console.warn("d--", d.default_melting_id);
+    let addCartData = new FormData();
+
+    let adData = JSON.stringify(
+      [{
+        'user_id': userId.toString(),
+        "table": 'cart',
+        'product_id': d.product_master_id,
+        'product_inventory_table': "product_master",
+        'gross_wt': d.key_value[0],
+        'net_wt': d.key_value[1],
+        'melting_id': d.default_melting_id ? d.default_melting_id : '',
+        'no_quantity': count,
+        'device_type': Platform.OS === 'ios' ? 'ios' : 'android',
+        'remarks': remark,
+        'size': d.key_value[2],
+        'weight': parseInt(weight),
+        'length': length
+      }]
+    )
+
+    addCartData.append('Add_To_Cart', adData)
+    this.props.addToCartFromDetails(addCartData)
+  }
+
+
+  addToWishList = (d) => {
+
+    const { length, count, remark, weight } = this.state
+    const addWishData = new FormData();
+
+    let wshData = JSON.stringify(
+      [{
+        'user_id': userId,
+        "table": 'wishlist',
+        'product_id': d.product_master_id,
+        'product_inventory_table': "product_master",
+        'gross_wt': d.key_value[0],
+        'net_wt': d.key_value[1],
+        'melting_id': d.default_melting_id,
+        'no_quantity': count,
+        'device_type': Platform.OS === 'ios' ? 'ios' : 'android',
+        'remarks': remark,
+        'size': d.key_value[2],
+        'weight': parseInt(weight),
+        'length': length
+      }]
+    )
+    addWishData.append('Add_To_Cart', wshData)
+    this.props.addToCartFromDetails(addWishData)
+  }
+
+
 
 
   render() {
@@ -394,9 +395,9 @@ addToWishList = (d) =>{
       extrapolate: 'clamp',
     });
 
-    const { productDetailsStateData,weight } = this.state
+    const { productDetailsStateData, weight } = this.state
 
-    console.warn("productDetailsStateData",productDetailsStateData);
+    console.warn("productDetailsStateData", productDetailsStateData);
 
     let url = urls.imageUrl + (productDetailsStateData !== undefined && productDetailsStateData.zoom_image)
 
@@ -410,15 +411,16 @@ addToWishList = (d) =>{
               iosBarStyle="default"
               androidStatusBarColor="default">
               <View style={styles.textViewStyle}>
-                <TouchableOpacity onPress={()=>this.props.navigation.goBack()}>
+                <TouchableOpacity onPress={() => this.props.navigation.goBack()}>
                   <Image
                     source={require('../../assets/image/back.png')}
-                    style={{marginLeft: 10,height: hp(2.2),width:  hp(2.2)
+                    style={{
+                      marginLeft: 10, height: hp(2.2), width: hp(2.2)
                     }}
                   />
-             </TouchableOpacity>
+                </TouchableOpacity>
                 <Animated.Text
-                  style={[styles.headerTextStyle,{opacity: headerOpacity}]}>
+                  style={[styles.headerTextStyle, { opacity: headerOpacity }]}>
                   {productDetailsStateData.product_name}
                 </Animated.Text>
               </View>
@@ -578,7 +580,7 @@ addToWishList = (d) =>{
                           <Text style={{ fontSize: 16, color: 'gray' }}>Weight</Text>
                         </View>
                         <View>
-                         { this.PickerWeightDropDown(weight)}
+                          {this.PickerWeightDropDown(weight)}
                           {/* <PickerWeightDropDown weight={ weight} /> */}
                         </View>
                       </View>
@@ -593,7 +595,7 @@ addToWishList = (d) =>{
                           style={{
                             width: '80%',
                             marginLeft: 100,
-                            marginRight:10
+                            marginRight: 10
                           }}>
                           <TextInput
                             style={styles.lengthTextInput}
@@ -760,7 +762,7 @@ const styles = StyleSheet.create({
     height: hp(9),
   },
   remarkIcon: {
-    marginTop:hp(1.2),
+    marginTop: hp(1.2),
     width: hp(3.5),
     height: hp(3.5),
     resizeMode: 'contain',
@@ -849,6 +851,7 @@ function mapStateToProps(state) {
   }
 }
 
-export default connect(mapStateToProps, { getProductDetails, addToCartFromDetails,
+export default connect(mapStateToProps, {
+  getProductDetails, addToCartFromDetails,
   getTotalCartCount
 })(ProductDetails)

@@ -10,6 +10,7 @@ import {
   ADD_TO_CART_FROM_DETAILS_DATA_RESET_REDUCER,
 
 } from "@redux/types";
+const qs = require('query-string');
 
 import { strings } from '@values/strings'
 import axios from 'axios'
@@ -72,13 +73,13 @@ export function getProductDetails(data) {
   
 
 export function addToCartFromDetails(data) {
-  console.warn("data--",data);
+  console.warn("addToCartFromDetails--",data);
 
   return dispatch => {
     dispatch(showLoadingIndicator(ADD_TO_CART_FROM_DETAILS_DATA));
 
     axios.post(urls.AddToCartFromDetails.url, data, header).then(response => {
-      console.warn("response--",response.data);
+      console.warn("response--",response);
         if (response.data.ack ==='1') {
           dispatch(
             onSuccess(response.data, ADD_TO_CART_FROM_DETAILS_DATA_SUCCESS)

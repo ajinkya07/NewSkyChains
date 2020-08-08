@@ -415,7 +415,7 @@ class OrderHistoryDetail extends Component {
                     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'
                   }}>
 
-                    <Text style={{ fontSize: 16, fontWeight: '400',color:color.brandColor }}>Order History Summery</Text>
+                    <Text style={{ fontSize: 16, fontWeight: '400',color:color.brandColor }}>Order History Summary</Text>
 
                     <TouchableOpacity
                       hitSlop={{ top: 5, left: 5, bottom: 5, right: 5 }}

@@ -33,7 +33,7 @@ export const urls = {
     },
     
     AddToCartFromDetails:{
-        url: url + "Product_Cart/add_to_cart"
+        url: url + 'Product_Cart/add_to_cart'
     },
     TotalCartCount:{
         url: url + 'Product_Cart/cart_value_count'
