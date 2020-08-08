@@ -26,7 +26,7 @@ import {
         };
   
       case CUSTOMIZE_ORDER_DATA_SUCCESS:
-        console.warn("action.data.data",action.data.data);
+        console.warn("action.data",action.data);
         return {
           ...state,
           errorMsg: "",

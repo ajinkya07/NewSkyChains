@@ -23,6 +23,7 @@ import Modal from 'react-native-modal';
 import _Text from '@text/_Text'
 import { color } from '@values/colors';
 import CartContainer from '@cartContainer/CartContainer'
+import { getTotalCartCount} from '@homepage/HomePageAction';
 
 
 
@@ -48,7 +49,11 @@ class OrderHistoryDetail extends Component {
 
       successReOrderVersion: 0,
       errorReOrderVersion: 0,
-      reOrderDataState: []
+      reOrderDataState: [],
+
+      successTotalCartCountVersion: 0,
+      errorTotalCartCountVersion: 0,
+
     };
     userId = global.userId
   }
@@ -66,7 +71,9 @@ class OrderHistoryDetail extends Component {
 
   static getDerivedStateFromProps(nextProps, prevState) {
     const { successOrderHistoryDetailsVersion, errorOrderHistoryDetailsVersion,
-      successReOrderVersion, errorReOrderVersion
+      successReOrderVersion, errorReOrderVersion,
+      successTotalCartCountVersion, errorTotalCartCountVersion,
+
     } = nextProps;
 
     let newState = null;
@@ -98,11 +105,25 @@ class OrderHistoryDetail extends Component {
       };
     }
 
+    if (successTotalCartCountVersion > prevState.successTotalCartCountVersion) {
+      newState = {
+          ...newState,
+          successTotalCartCountVersion: nextProps.successTotalCartCountVersion,
+      };
+  }
+  if (errorTotalCartCountVersion > prevState.errorTotalCartCountVersion) {
+      newState = {
+          ...newState,
+          errorTotalCartCountVersion: nextProps.errorTotalCartCountVersion,
+      };
+  }
+
+
     return newState;
   }
 
   async componentDidUpdate(prevProps, prevState) {
-    const { orderHistoryDetailsData, reOrderData } = this.props;
+    const { orderHistoryDetailsData, reOrderData,totalCartCountData } = this.props;
 
     if (this.state.successOrderHistoryDetailsVersion > prevState.successOrderHistoryDetailsVersion) {
       this.setState({
@@ -126,11 +147,19 @@ class OrderHistoryDetail extends Component {
         text: this.props.errorMsg,
         duration: 2500
       })
+
+      const data2 = new FormData();
+      data2.append('user_id', userId);
+      data2.append('table', 'cart');
+
+      await this.props.getTotalCartCount(data2)
+
       // this.props.navigation.navigate('CartContainer',{navigation:this.props.navigation})
       
       // return (
       //     <CartContainer navigation={this.props.navigation} />
       // )
+
     }
 
     if (this.state.errorReOrderVersion > prevState.errorReOrderVersion) {
@@ -139,6 +168,14 @@ class OrderHistoryDetail extends Component {
         duration: 2500
       })
     }
+
+    if (this.state.successTotalCartCountVersion > prevState.successTotalCartCountVersion) {
+      global.totalCartCount = totalCartCountData.count
+    }
+    if (this.state.errorTotalCartCountVersion > prevState.errorTotalCartCountVersion) {
+      global.totalCartCount = totalCartCountData.count
+    }
+
   }
 
 
@@ -177,6 +214,7 @@ class OrderHistoryDetail extends Component {
 
   OrderHistoryDetailComponent = (data) => {
 
+    console.warn("data---",data.image_zoom);
     return (
       <View style={styles.container}>
         <Text style={styles.productIdText}>Product Id: {data.product_id}</Text>
@@ -226,6 +264,7 @@ class OrderHistoryDetail extends Component {
     );
   };
 
+
   reOrderProduct = async () => {
     const { orderItemdata } = this.state
 
@@ -235,11 +274,9 @@ class OrderHistoryDetail extends Component {
 
     await this.props.reOrderProduct(data)
 
-     //this.props.navigation.navigate('CartContainer',{navigation:this.props.navigation})
+    //this.props.navigation.navigate('CartContainer',{navigation:this.props.navigation})
 
-  
-        // return <CartContainer navigation={this.props.navigation} />
-  
+    // return <CartContainer navigation={this.props.navigation} />
   }
 
 
@@ -420,7 +457,12 @@ function mapStateToProps(state) {
     errorReOrderVersion: state.orderHistoryReducer.errorReOrderVersion,
     reOrderData: state.orderHistoryReducer.reOrderData,
 
+    successTotalCartCountVersion: state.homePageReducer.successTotalCartCountVersion,
+    errorTotalCartCountVersion: state.homePageReducer.errorTotalCartCountVersion,
+    totalCartCountData: state.homePageReducer.totalCartCountData,
+
   };
 }
 
-export default connect(mapStateToProps, { getOrderHistoryDetails, reOrderProduct })(OrderHistoryDetail);
+export default connect(mapStateToProps, { getOrderHistoryDetails, 
+  reOrderProduct, getTotalCartCount })(OrderHistoryDetail);

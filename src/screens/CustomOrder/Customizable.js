@@ -90,9 +90,29 @@ class Customizable extends Component {
 
   async componentDidUpdate(prevProps, prevState) {
     const { customOrderData } = this.props;
-
     if (this.state.successCustomOrderVersion > prevState.successCustomOrderVersion) {
-      this.showToast(this.props.errorMsg, 'success');
+      if (customOrderData.ack == '1') {
+        Toast.show({
+          text: this.props.errorMsg ? this.props.errorMsg : 'Order placed successfully',
+          type: 'success'
+        })
+
+        this.setState({
+          grossWeight: '',
+          netWeight:'',
+          length: '',
+          size:'',
+          quantity: '',
+          hookType: '',
+          color: '',
+          diameter: '',
+          remark: '',
+          imageUrl: '',
+          date: '',
+          imageData: '',
+    
+        })
+      }
 
     }
     if (this.state.errorCustomOrderVersion > prevState.errorCustomOrderVersion) {
@@ -221,94 +241,74 @@ class Customizable extends Component {
   }
 
 
-  submitCustomOrder = async () => {
-    let { imageData, grossWeight,karatValue, netWeight,size,length, quantity,
+  submitCustomOrder =async () => {
+    const { imageData, grossWeight,karatValue, netWeight,size,length, quantity,
        hookType, color, diameter, remark, imageUrl, date } = this.state
 
-     
-
-    try {
-      var photo = {
-        uri: Platform.OS === 'android' ? imageData.path : imageData.path.replace('file://', ''),
-        type: imageData.mime,
-        name: 'photo.jpg',
-      }
-      let data = new FormData();
-
-      data.append('file', 'ajinkya');
-
-      await this.props.submitCustomOrder(data)
-    }
-    catch(err){
-      console.warn("err0r--",err);
+       var timeStamp = new Date().getTime() + 10 * 24 *60 * 60 * 1000
+       var timeStampDate = moment(new Date(timeStamp).toISOString().slice(0,10)).format('DD-MM-YYYY')
+   
+    var photo = {
+      uri: Platform.OS === 'android' ? imageData.path : imageData.path.replace('file://', ''),
+      type: imageData.mime,
+      name: imageData.modificationDate + '.jpg',
     }
 
-
-
-    // if (!grossWeight) {
-    //   this.showToast('Please enter gross weight', 'danger')
+    if (!grossWeight) {
+      this.showToast('Please enter gross weight', 'danger')
+    }
+    else if (!netWeight) {
+      this.showToast('Please enter net weight', 'danger')
+    }
+    else if (!length) {
+      this.showToast('Please enter length', 'danger')
+    }
+    else if (!size) {
+      this.showToast('Please enter size', 'danger')
+    }
+    else if (!quantity) {
+      this.showToast('Please enter quantity', 'danger')
+    }
+    else if (!hookType) {
+      this.showToast('Please enter hookType', 'danger')
+    }
+    else if (!color) {
+      this.showToast('Please enter color', 'danger')
+    }
+    else if (!diameter) {
+      this.showToast('Please enter diameter', 'danger')
+    }
+    else if (!date) {
+      this.showToast('Please select delivery date', 'danger')
+    }
+    else if (date != '' && timeStampDate > date ){
+      alert('Date must be 10 days greater')
+    }
+    // if(!remark){
+    //   this.showToast('Please enter remark','danger')
     // }
-    // else if (!netWeight) {
-    //   this.showToast('Please enter net weight', 'danger')
-    // }
-    // else if (!length) {
-    //   this.showToast('Please enter length', 'danger')
-    // }
-    // else if (!size) {
-    //   this.showToast('Please enter size', 'danger')
-    // }
-    // else if (!quantity) {
-    //   this.showToast('Please enter quantity', 'danger')
-    // }
-    // else if (!hookType) {
-    //   this.showToast('Please enter hookType', 'danger')
-    // }
-    // else if (!color) {
-    //   this.showToast('Please enter color', 'danger')
-    // }
-    // else if (!diameter) {
-    //   this.showToast('Please enter diameter', 'danger')
-    // }
-    // else if (!date) {
-    //   this.showToast('Please select delivery date', 'danger')
-    // }
-    // // if(!remark){
-    // //   this.showToast('Please enter remark','danger')
-    // // }
-    // else if (!imageUrl) {
-    //   this.showToast('Please add image', 'danger')
-    // }
+    else if (!imageUrl) {
+      this.showToast('Please add image', 'danger')
+    }
+    else {
+      const data = new FormData();
 
-    // else {
-    //   const data = new FormData();
+      data.append('user_id', userId);
+      data.append('gross_wt', grossWeight);
+      data.append('size', size);
+      data.append('net_wt', netWeight);
+      data.append('length', length);
+      data.append('delivery_date', date);
+      data.append('remark', remark);
+      data.append('file', photo);
+      data.append('color', color);
+      data.append('diameter', diameter);
+      data.append('hook', hookType);
+      data.append('melting_id', karatValue);
 
-    //   data.append('user_id', userId);
-    //   data.append('gross_wt', grossWeight);
-    //   data.append('size', size);
-    //   data.append('net_wt', netWeight);
-    //   data.append('length', length);
-    //   data.append('delivery_date', date);
-    //   data.append('remark', remark);
-    //   // data.append('file', photo);
+     await  this.props.submitCustomOrder(data)
 
-
-    //   data.append('file', {
-    //     uri: Platform.OS === 'android' ? imageData.path : imageData.path.replace('file://', ''),
-    //     type: imageData.mime,
-    //     name: 'photo.jpg',
-    //   });
-
-
-    //   data.append('color', color);
-    //   data.append('diameter', diameter);
-    //   data.append('hook', hookType);
-    //   data.append('melting_id', karatValue);
-
-      
-
-    //   this.props.submitCustomOrder(data)
-
-    // }
+    }
 
   }
 
@@ -328,7 +328,7 @@ class Customizable extends Component {
 
 
   PickerDropDown = () => {
-    let { karatValue } = this.state
+    const { karatValue } = this.state
 
     return (
       <View>
@@ -356,14 +356,14 @@ class Customizable extends Component {
         position: 'absolute', height: hp(100), width: wp(100),
         alignItems: 'center', justifyContent: 'center',
       }}>
-        <ActivityIndicator size="large" color={color.white} />
+        <ActivityIndicator size="large" color={color.brandColor} />
       </View>
     );
   };
 
 
   render() {
-    let { isDateTimePickerVisible } = this.state;
+    const { isDateTimePickerVisible } = this.state;
 
 
     return (
