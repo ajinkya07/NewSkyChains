@@ -20,7 +20,7 @@ import { CommonActions } from '@react-navigation/native';
 import AsyncStorage from '@react-native-community/async-storage';
 import Modal from 'react-native-modal';
 import { color } from '@values/colors';
-
+import Theme from '../../../values/Theme'
 import { version } from "../../../../package.json"
 const { width } = Dimensions.get('window');
 
@@ -403,6 +403,7 @@ const styles = StyleSheet.create({
   titleText: {
     fontSize: hp(2.2),
     color: '#fbcb84',
+    ...Theme.ffLatoRegular
   },
   titleView: {
     flex: 1,

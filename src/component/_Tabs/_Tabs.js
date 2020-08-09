@@ -148,7 +148,9 @@ export default function _Tabs() {
                     margin: 0, padding: 0, bottom: 2, top: 2
                 },
             }}
-            barStyle={{ backgroundColor: '#EEF8F7', }}
+//            barStyle={{ backgroundColor: '#EEF8F7', }}
+            barStyle={{ backgroundColor:'rgb(251,244,239)' }}
+
         >
 
             <Tab.Screen name="Home"

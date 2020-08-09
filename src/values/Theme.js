@@ -1,5 +1,9 @@
 export default {
   // Lato Bold
+  ffLatoBold13: {
+    fontSize: 13,
+    fontFamily: 'Lato-Bold',
+  },
   ffLatoBold16: {
     fontSize: 16,
     fontFamily: 'Lato-Bold',
@@ -18,6 +22,10 @@ export default {
   },
 
   // Lato Regular
+  ffLatoRegular11: {
+    fontSize: 11,
+    fontFamily: 'Lato-Regular',
+  },
   ffLatoRegular13: {
     fontSize: 13,
     fontFamily: 'Lato-Regular',

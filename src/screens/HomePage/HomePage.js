@@ -383,18 +383,20 @@ class HomePage extends Component {
 
     getCategoryDesigns = (item, index) => {
         const { homePageData } = this.props
-        const { categoryView, categoryImage, horizontalCategory } = HomePageStyle;
+        const { categoryView, categoryImage, horizontalCategory,categoryImageViewStyle } = HomePageStyle;
         let baseUrl = 'http://jewel.jewelmarts.in/public/backend/collection/'
 
         return (
             <TouchableOpacity onPress={() => this.getProductGridOrNot(item)}>
                 <View animation="zoomIn" style={categoryView}>
+                    <View style={categoryImageViewStyle}>
                     <Animatable.Image animation="zoomIn"
                         resizeMode={'cover'}
                         style={categoryImage}
                         defaultSource={require('../../assets/image/default.png')}
                         source={{ uri: baseUrl + item.image_name }}
                     />
+                    </View>
                     <_Text numberOfLines={2} 
                         fsPrimary
                         style={{ textAlign: 'center', marginTop: hp(1) }}>

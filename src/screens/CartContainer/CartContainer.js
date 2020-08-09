@@ -29,7 +29,7 @@ import FloatingLabelTextInput from '@floatingInputBox/FloatingLabelTextInput';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import moment from 'moment'
 import AsyncStorage from '@react-native-community/async-storage';
-
+import Theme from '../../values/Theme'
 
 var userId = ''
 
@@ -1954,14 +1954,16 @@ const styles = StyleSheet.create({
   },
   codeText: {
     textAlign: 'left',
-    color: '#808080',
+    color: '#757575',
+    ...Theme.ffLatoRegular13
   },
   chainTitleView: {
     justifyContent: 'center',
   },
   chainTitleText: {
     textAlign: 'right',
-    color: '#808080',
+    color: '#757575',
+    ...Theme.ffLatoRegular13
   },
   moreDetailView: {
     flexDirection: 'row',
@@ -2003,7 +2005,8 @@ const styles = StyleSheet.create({
   },
   btnText: {
     fontSize: 12,
-    color: color.brandColor
+    color: color.brandColor,
+    ...Theme.ffLatoRegular11
   },
   border: {
     marginHorizontal: 18,
@@ -2013,7 +2016,9 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   textColor: {
-    color: '#808080',
+    color: '#757575',
+    ...Theme.ffLatoRegular13
+
   },
   buttonStyle: {
     backgroundColor: '#11255a',

@@ -71,8 +71,8 @@ export default {
   categoryImage: {
     height: hp(11),
     width: hp(11),
-    borderColor:'gray',
-    borderWidth:0.3,
+   // borderColor:'gray',
+    //borderWidth:0.3,
     borderRadius:10
 
   },
@@ -82,9 +82,15 @@ export default {
   horizontalLatestDesign:{
     backgroundColor:color.white,
     height:hp(38),width:wp(39),marginTop:hp(2),
-    borderColor:'gray',
-    borderWidth:0.3,borderRadius:10,
+   // borderColor:'gray',
+    //borderWidth:0.3,
+    borderRadius:10,
     marginHorizontal: hp(1),
+
+    ...Platform.select({ios:{shadowColor:'#000',shadowOffset:{width:0,height:1},
+    shadowOpacity:0.18,shadowRadius:1.0 }, 
+    android:{flex:1,borderRadius:10,overflow:'hidden',backgroundColor:'#fff',elevation:4}} )
+
   },
 
   latestDesign: {
@@ -143,7 +149,10 @@ socialTextView:{
   alignItems:'center',
   width:wp(60),
   marginRight:hp(2),
-
-
+},
+categoryImageViewStyle:{
+  ...Platform.select({ios:{shadowColor:'#000',shadowOffset:{width:0,height:2},
+                      shadowOpacity:0.23,shadowRadius:2.62 }, 
+                      android:{flex:1,borderRadius:10,overflow:'hidden',backgroundColor:'#fff',elevation:4}} )
 }
 }

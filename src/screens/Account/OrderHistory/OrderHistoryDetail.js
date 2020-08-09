@@ -25,6 +25,7 @@ import { color } from '@values/colors';
 import CartContainer from '@cartContainer/CartContainer'
 import { getTotalCartCount} from '@homepage/HomePageAction';
 import IconPack from '@login/IconPack';
+import Theme from '../../../values/Theme'
 
 
 
@@ -323,7 +324,7 @@ class OrderHistoryDetail extends Component {
 
     return (
       <>
-        <SafeAreaView style={{ flex: 1 }}>
+        <SafeAreaView style={{ flex: 1,backgroundColor:'#f7f7f7' }}>
           <_CustomHeader
             Title='Order History Details'
             RightBtnIcon1={require('../../../assets/image/BlueIcons/Search.png')}
@@ -332,6 +333,7 @@ class OrderHistoryDetail extends Component {
             RightBtnPressOne={() => this.props.navigation.navigate('SearchScreen')}
             RightBtnPressTwo={() => this.props.navigation.navigate('Notification')}
             rightIconHeight2={hp(3.5)}
+            backgroundColor={'#fff'}
           />
 
           {orderHistoryDetailsData &&
@@ -538,6 +540,9 @@ const styles = StyleSheet.create({
   productIdText: {
     textAlign: 'center',
     marginBottom: 6,
+    ...Theme.ffLatoBold13,
+    color:'#000'
+  
   },
   subcontainerView: {
     flexDirection: 'row',

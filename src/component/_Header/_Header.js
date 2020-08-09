@@ -31,7 +31,8 @@ class _Header extends Component {
           width: wp(100),
           height: hp(7.5),
           paddingVertical: Platform.OS === 'ios' ? hp(2) : 2,
-          backgroundColor: '#EEF8F7',
+//          backgroundColor: '#EEF8F7',
+          backgroundColor: 'rgb(236,211,177)',
         }}>
         <Left style={{ marginLeft: hp(1), width: wp(30) }}>
           <Button transparent>
@@ -44,8 +45,9 @@ class _Header extends Component {
               (
                 <View style={{ marginTop: 2, marginBottom: 2, width: wp(40) }}>
                   <Text style={{
-                    fontFamily: 'Lato-Regular',
-                    color: color.brandColor,
+                    fontFamily: 'Lato-Bold',
+                    color:'white',
+                    // color: color.brandColor,
                     fontSize: hp(2.5),
                     // Theme.ffLatoRegular16
                   }}>

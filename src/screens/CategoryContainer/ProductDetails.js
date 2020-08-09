@@ -320,7 +320,7 @@ class ProductDetails extends React.Component {
           mode="dropdown"
           style={{ height: 50, width: wp(55) }}
           selectedValue={weight}
-          onValueChange={(itemValue, itemIndex) => setSelectedValue(itemValue)}>
+          onValueChange={(itemValue, itemIndex) => this.setSelectedValue(itemValue)}>
           <Picker.Item label={(weight).toString()} value={parseInt(weight)} />
         </Picker>
       </View>
@@ -447,7 +447,7 @@ class ProductDetails extends React.Component {
 
                   <View style={styles.mainContainerStyle}>
                     <View style={styles.topTitleContainer}>
-                      <View style={{ width: wp(83) }}>
+                      <View style={{ width: wp(73) }}>
                         <Text style={{ fontSize: 19, color: color.brandColor }}>{productDetailsStateData.product_name}</Text>
                       </View>
                       <View style={{ justifyContent: 'flex-end', flexDirection: 'row' }}>

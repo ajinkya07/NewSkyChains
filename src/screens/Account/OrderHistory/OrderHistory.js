@@ -16,7 +16,7 @@ import { getOrderHistoryList } from '@orderHistory/OrderHistoryAction'
 import { Toast } from 'native-base';
 import _Text from '@text/_Text'
 import { color } from '@values/colors';
-
+import Theme from '../../../values/Theme'
 
 var userId = ''
 
@@ -99,22 +99,22 @@ class OrderHistory extends Component {
       <TouchableOpacity
         onPress={() => this.props.navigation.navigate('OrderHistoryDetail',{data:item})}>
         <View>
-          <Text>Order Number:{item.order_id}</Text>
+          <Text style={{...Theme.ffLatoBold13}}>Order Number:{item.order_id}</Text>
           <View style={styles.rowTextStyle}>
-            <Text>Order Date</Text>
-            <Text>{item.order_date}</Text>
+            <Text style={{...Theme.ffLatoRegular13,color:'#000'}}>Order Date</Text>
+            <Text style={{...Theme.ffLatoRegular13,color:'#000'}}>{item.order_date}</Text>
           </View>
           <View style={styles.rowTextStyle}>
-            <Text>Delivery Date</Text>
-            <Text>{item.delivery_date}</Text>
+            <Text style={{...Theme.ffLatoRegular13,color:'#000'}}>Delivery Date</Text>
+            <Text style={{...Theme.ffLatoRegular13,color:'#000'}}>{item.delivery_date}</Text>
           </View>
           <View style={styles.rowTextStyle}>
-            <Text>Total Weight</Text>
-    <Text>{item.total_weight}</Text>
+            <Text style={{...Theme.ffLatoRegular13,color:'#000'}}>Total Weight</Text>
+    <Text style={{...Theme.ffLatoRegular13,color:'#000'}}>{item.total_weight}</Text>
           </View>
           <View style={styles.rowTextStyle}>
-            <Text>Remarks</Text>
-    <Text>{item.remarks}</Text>
+            <Text style={{...Theme.ffLatoRegular13,color:'#000'}}>Remarks</Text>
+    <Text style={{...Theme.ffLatoRegular13,color:'#000'}}>{item.remarks}</Text>
           </View>
           <View style={styles.bottomLine}></View>
         </View>
@@ -143,7 +143,7 @@ class OrderHistory extends Component {
    console.warn("orderHistoryData",orderHistoryData);
 
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: '#f7f7f7' }}>
         <_CustomHeader
           Title='Order History'
           RightBtnIcon1={require('../../../assets/image/BlueIcons/Search.png')}
@@ -152,6 +152,7 @@ class OrderHistory extends Component {
           RightBtnPressOne={() => this.props.navigation.navigate('SearchScreen')}
           RightBtnPressTwo={() => this.props.navigation.navigate('Notification')}
           rightIconHeight2={hp(3.5)}
+          backgroundColor={'#fff'}
         />
 
         {orderHistoryData && orderHistoryData.length > 0 &&
@@ -180,9 +181,11 @@ class OrderHistory extends Component {
     );
   }
 }
+
+
 const styles = StyleSheet.create({
   viewContainer: {
-    marginTop: Platform.OS === 'ios' ? 12 : 10,
+   // marginTop: Platform.OS === 'ios' ? 12 : 10,
     marginHorizontal: 16,
     backgroundColor: '#FFFFFF'
   },
